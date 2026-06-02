@@ -12,7 +12,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Proyecto_final">
         <activity
-            android:name=".MainActivity"
+            android:name=".LogrosActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MiProgresoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SimuladorActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EvaluacionesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ModulosActivity"
+            android:exported="false" />
+        <activity
+            android:name=".InicioActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
