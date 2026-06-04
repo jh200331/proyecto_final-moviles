@@ -51,7 +51,7 @@ fun SplashScreen(onTimeout: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Asegúrate de tener el archivo icon_cyberlearn.png en res/drawable
+
         Image(
             painter = painterResource(id = R.drawable.icon_cyberlearn),
             contentDescription = "Logo",
@@ -69,7 +69,6 @@ fun SplashScreen(onTimeout: () -> Unit) {
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        // Barra de carga con el color azul solicitado
         LinearProgressIndicator(
             modifier = Modifier
                 .width(200.dp)
