@@ -22,6 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "proyecto_final"
+rootProject.name = "ProyectoFinal_moviles"
 include(":app")
- 
