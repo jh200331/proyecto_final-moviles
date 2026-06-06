@@ -12,6 +12,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ProyectoFinal">
         <activity
+            android:name=".logros.LogrosActivity"
+            android:exported="false"
+            android:label="Logros"
+            android:theme="@style/Theme.ProyectoFinal" />
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"

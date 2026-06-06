@@ -7,4 +7,14 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="logros_azul_principal">#003B86</color>
+    <color name="logros_azul_secundario">#0052B8</color>
+    <color name="logros_azul_profundo">#002F6F</color>
+    <color name="logros_texto">#1F2A44</color>
+    <color name="logros_texto_suave">#6D7890</color>
+    <color name="logros_borde">#E6EAF2</color>
+    <color name="logros_bloqueado">#D8DEE8</color>
+    <color name="logros_dorado">#D99A00</color>
+    <color name="logros_bronce">#A96A15</color>
+    <color name="logros_acero">#6D8FB3</color>
 </resources>

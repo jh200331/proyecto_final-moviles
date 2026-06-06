@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">proyecto final</string>
+    <string name="logros_nivel_actual">Nivel actual del usuario</string>
+    <string name="logros_insignia">Insignia de logro</string>
 </resources>
