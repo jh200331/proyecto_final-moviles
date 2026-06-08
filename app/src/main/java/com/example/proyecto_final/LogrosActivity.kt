@@ -1,7 +1,6 @@
 package com.example.proyecto_final
 
-import
-android.os.Bundle
+import android.os.Bundle
 import androidx.activity.ComponentActivity
 import com.example.proyectofinal_moviles.R
 
