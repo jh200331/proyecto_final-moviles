@@ -1,27 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Paleta institucional ESEIT: azul oscuro, rojo y blanco -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="primary">#073B7A</color>
-    <color name="primary_dark">#052A5A</color>
-    <color name="accent">#0B63F6</color>
-    <color name="background">#F4F8FF</color>
-    <color name="logros_azul_principal">#003B86</color>
-    <color name="logros_azul_secundario">#0052B8</color>
-    <color name="logros_azul_profundo">#002F6F</color>
-    <color name="logros_texto">#1F2A44</color>
-    <color name="logros_texto_suave">#6D7890</color>
-    <color name="logros_borde">#E6EAF2</color>
+
+    <color name="eseit_navy_dark">#0D1B3E</color>
+    <color name="eseit_navy">#1A2F5C</color>
+    <color name="eseit_red">#D32F2F</color>
+    <color name="eseit_red_dark">#B71C1C</color>
+    <color name="eseit_teal">#00838F</color>
+
+    <color name="primary">#1A2F5C</color>
+    <color name="primary_dark">#0D1B3E</color>
+    <color name="accent">#D32F2F</color>
+    <color name="background">#F5F6F8</color>
+
+    <color name="logros_azul_principal">#0D1B3E</color>
+    <color name="logros_azul_secundario">#1A2F5C</color>
+    <color name="logros_azul_profundo">#0A1428</color>
+    <color name="logros_texto">#0D1B3E</color>
+    <color name="logros_texto_suave">#5A6478</color>
+    <color name="logros_borde">#E8EAED</color>
     <color name="logros_bloqueado">#D8DEE8</color>
-    <color name="logros_dorado">#D99A00</color>
-    <color name="logros_bronce">#A96A15</color>
-    <color name="logros_acero">#6D8FB3</color>
+    <color name="logros_dorado">#D32F2F</color>
+    <color name="logros_bronce">#B71C1C</color>
+    <color name="logros_acero">#3D5A8A</color>
+
     <color name="card_background">#FFFFFF</color>
-    <color name="card_stroke">#DDE7F5</color>
-    <color name="text_primary">#152640</color>
-    <color name="text_muted">#5A6980</color>
-    <color name="purple_accent">#6C3CE8</color>
-    <color name="green_accent">#00A86B</color>
-    <color name="gradient_start">#0B63F6</color>
-    <color name="gradient_end">#6C3CE8</color>
+    <color name="card_stroke">#E0E4EA</color>
+    <color name="text_primary">#0D1B3E</color>
+    <color name="text_muted">#5A6478</color>
+    <color name="purple_accent">#D32F2F</color>
+    <color name="green_accent">#1A2F5C</color>
+    <color name="gradient_start">#1A2F5C</color>
+    <color name="gradient_end">#B71C1C</color>
 </resources>

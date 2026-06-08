@@ -37,7 +37,8 @@ class SplashActivity : ComponentActivity() {
 
 @Composable
 fun SplashScreen(onTimeout: () -> Unit) {
-    val customBlue = Color(0xFF0A2A75)
+    val eseitNavy = Color(0xFF0D1B3E)
+    val eseitRed = Color(0xFFD32F2F)
 
     LaunchedEffect(Unit) {
         delay(3000) // 3 segundos de carga
@@ -64,7 +65,7 @@ fun SplashScreen(onTimeout: () -> Unit) {
             text = "CyberLearn",
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
-            color = customBlue
+            color = eseitNavy
         )
 
         Spacer(modifier = Modifier.height(40.dp))
@@ -73,8 +74,8 @@ fun SplashScreen(onTimeout: () -> Unit) {
             modifier = Modifier
                 .width(200.dp)
                 .height(8.dp),
-            color = customBlue,
-            trackColor = customBlue.copy(alpha = 0.2f)
+            color = eseitRed,
+            trackColor = eseitNavy.copy(alpha = 0.15f)
         )
     }
 }

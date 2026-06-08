@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#4A9EFF</color>
-    <color name="primary_dark">#E8EEF8</color>
-    <color name="accent">#6C9FFF</color>
-    <color name="background">#0D1117</color>
-    <color name="card_background">#161B22</color>
-    <color name="card_stroke">#30363D</color>
-    <color name="text_primary">#E8EEF8</color>
-    <color name="text_muted">#8B949E</color>
-    <color name="purple_accent">#9B59B6</color>
-    <color name="green_accent">#3FB950</color>
-    <color name="gradient_start">#1A3A6B</color>
-    <color name="gradient_end">#4A2D8A</color>
+    <!-- Modo oscuro — identidad ESEIT -->
+    <color name="primary">#3D5A8A</color>
+    <color name="primary_dark">#FFFFFF</color>
+    <color name="accent">#EF5350</color>
+    <color name="background">#0A1428</color>
+    <color name="card_background">#0D1B3E</color>
+    <color name="card_stroke">#1A2F5C</color>
+    <color name="text_primary">#F5F6F8</color>
+    <color name="text_muted">#9AA3B5</color>
+    <color name="purple_accent">#EF5350</color>
+    <color name="green_accent">#3D5A8A</color>
+    <color name="gradient_start">#0D1B3E</color>
+    <color name="gradient_end">#B71C1C</color>
 </resources>

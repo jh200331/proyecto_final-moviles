@@ -193,8 +193,8 @@ abstract class CyberBaseActivity : AppCompatActivity() {
     protected fun statusChip(status: ModuleStatus): TextView {
         val (bg, fg, text) = when (status) {
             ModuleStatus.LOCKED -> Triple(Color.rgb(216, 222, 232), textMuted, "Bloqueado")
-            ModuleStatus.IN_PROGRESS -> Triple(Color.argb(30, 11, 99, 246), accent, "En progreso")
-            ModuleStatus.COMPLETED -> Triple(Color.argb(30, 0, 168, 107), greenAccent, "Completado")
+            ModuleStatus.IN_PROGRESS -> Triple(Color.argb(30, 211, 47, 47), accent, "En progreso")
+            ModuleStatus.COMPLETED -> Triple(Color.argb(30, 26, 47, 92), greenAccent, "Completado")
         }
         return TextView(this).apply {
             this.text = text

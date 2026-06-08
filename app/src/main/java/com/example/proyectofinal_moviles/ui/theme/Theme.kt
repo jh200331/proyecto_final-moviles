@@ -1,42 +1,52 @@
 package com.example.proyectofinal_moviles.ui.theme
 
-import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+private val EseitLightColorScheme = lightColorScheme(
+    primary = EseitNavy,
+    onPrimary = EseitWhite,
+    primaryContainer = EseitNavyDark,
+    onPrimaryContainer = EseitWhite,
+    secondary = EseitRed,
+    onSecondary = EseitWhite,
+    tertiary = EseitTeal,
+    background = EseitBackground,
+    onBackground = EseitOnSurface,
+    surface = EseitSurface,
+    onSurface = EseitOnSurface,
+    surfaceVariant = Color(0xFFE8EAED),
+    onSurfaceVariant = EseitMuted,
+    outline = Color(0xFFE0E4EA)
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+private val EseitDarkColorScheme = darkColorScheme(
+    primary = Color(0xFF3D5A8A),
+    onPrimary = EseitWhite,
+    primaryContainer = EseitNavyDark,
+    onPrimaryContainer = EseitWhite,
+    secondary = Color(0xFFEF5350),
+    onSecondary = EseitWhite,
+    tertiary = EseitTeal,
+    background = EseitDarkBackground,
+    onBackground = EseitDarkOnSurface,
+    surface = EseitDarkSurface,
+    onSurface = EseitDarkOnSurface,
+    surfaceVariant = Color(0xFF1A2F5C),
+    onSurfaceVariant = Color(0xFF9AA3B5),
+    outline = Color(0xFF1A2F5C)
 )
 
 @Composable
 fun ProyectoFinal_movilesTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    val colorScheme = if (darkTheme) EseitDarkColorScheme else EseitLightColorScheme
 
     MaterialTheme(
         colorScheme = colorScheme,

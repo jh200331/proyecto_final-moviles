@@ -50,15 +50,16 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// Colores definidos para la aplicación
-val DarkBlue = Color(0xFF0A2A75)
-val LightGrayBackground = Color(0xFFF5F5F5)
+// Colores institucionales ESEIT
+val EseitNavyColor = Color(0xFF0D1B3E)
+val EseitRedColor = Color(0xFFD32F2F)
+val EseitBackgroundColor = Color(0xFFF5F6F8)
 
 @Composable
 fun DashboardScreen() {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = LightGrayBackground
+        containerColor = EseitBackgroundColor
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -80,7 +81,7 @@ fun DashboardScreen() {
                     text = "¿Qué deseas aprender hoy?",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = EseitNavyColor
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -96,7 +97,7 @@ fun HeaderSection() {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
-            .background(DarkBlue)
+            .background(EseitNavyColor)
             .windowInsetsPadding(WindowInsets.statusBars)
             .padding(horizontal = 8.dp, vertical = 20.dp)
     ) {
@@ -117,7 +118,7 @@ fun LevelCard() {
             .fillMaxWidth()
             .height(175.dp),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = DarkBlue),
+        colors = CardDefaults.cardColors(containerColor = EseitNavyColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Column(
@@ -186,7 +187,7 @@ fun LevelCard() {
                         .fillMaxWidth()
                         .height(10.dp)
                         .clip(RoundedCornerShape(5.dp)),
-                    color = Color.White,
+                    color = EseitRedColor,
                     trackColor = Color.White.copy(alpha = 0.2f)
                 )
                 Spacer(modifier = Modifier.height(10.dp))
@@ -286,7 +287,7 @@ fun MenuCardItem(item: MenuDataItem, onClick: () -> Unit) {
                     Icon(
                         imageVector = item.icon,
                         contentDescription = item.title,
-                        tint = DarkBlue,
+                        tint = EseitNavyColor,
                         modifier = Modifier.size(imageSize)
                     )
                 }
@@ -299,7 +300,7 @@ fun MenuCardItem(item: MenuDataItem, onClick: () -> Unit) {
                     text = item.title,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
-                    color = Color.Black
+                    color = EseitNavyColor
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
