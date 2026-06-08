@@ -1,11 +1,13 @@
 package com.example.proyectofinal_moviles
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -21,11 +23,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.proyecto_final.EvaluacionesActivity
+import com.example.proyecto_final.LogrosActivity
+import com.example.proyecto_final.MiProgresoActivity
+import com.example.proyecto_final.ModulosActivity
+import com.example.proyecto_final.SimuladorActivity
 import com.example.proyectofinal_moviles.ui.theme.ProyectoFinal_movilesTheme
 import kotlin.math.cos
 import kotlin.math.sin
@@ -207,12 +215,13 @@ val HexagonShape = GenericShape { size, _ ->
 
 @Composable
 fun MenuGrid() {
+    val context = LocalContext.current
     val items = listOf(
-        MenuDataItem("Módulos", "6 disponibles", imageRes = R.drawable.modulos_inicio),
-        MenuDataItem("Evaluaciones", "Pon a prueba tus conocimientos", imageRes = R.drawable.evaluacion_inicio),
-        MenuDataItem("Simulador", "Entrena ante ataques reales", imageRes = R.drawable.simulador_inicio),
-        MenuDataItem("Mi progreso", "Consulta tu avance", imageRes = R.drawable.progreso_inicio),
-        MenuDataItem("Logros", "Desbloquea recompensas", imageRes = R.drawable.logros_inicio),
+        MenuDataItem("Módulos", "6 disponibles", imageRes = R.drawable.modulos_inicio, activity = ModulosActivity::class.java),
+        MenuDataItem("Evaluaciones", "Pon a prueba tus conocimientos", imageRes = R.drawable.evaluacion_inicio, activity = EvaluacionesActivity::class.java),
+        MenuDataItem("Simulador", "Entrena ante ataques reales", imageRes = R.drawable.simulador_inicio, activity = SimuladorActivity::class.java),
+        MenuDataItem("Mi progreso", "Consulta tu avance", imageRes = R.drawable.progreso_inicio, activity = MiProgresoActivity::class.java),
+        MenuDataItem("Logros", "Desbloquea recompensas", imageRes = R.drawable.logros_inicio, activity = LogrosActivity::class.java),
     )
 
     LazyVerticalGrid(
@@ -223,7 +232,9 @@ fun MenuGrid() {
         contentPadding = PaddingValues(bottom = 32.dp)
     ) {
         items(items) { item ->
-            MenuCardItem(item)
+            MenuCardItem(item) {
+                context.startActivity(Intent(context, item.activity))
+            }
         }
     }
 }
@@ -232,11 +243,12 @@ data class MenuDataItem(
     val title: String,
     val subtitle: String,
     val icon: ImageVector? = null,
-    val imageRes: Int? = null
+    val imageRes: Int? = null,
+    val activity: Class<*>
 )
 
 @Composable
-fun MenuCardItem(item: MenuDataItem) {
+fun MenuCardItem(item: MenuDataItem, onClick: () -> Unit) {
     val cardHeight = 140.dp
     val cardPadding = 12.dp
     val imageSize = 40.dp
@@ -247,7 +259,8 @@ fun MenuCardItem(item: MenuDataItem) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(cardHeight),
+            .height(cardHeight)
+            .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)

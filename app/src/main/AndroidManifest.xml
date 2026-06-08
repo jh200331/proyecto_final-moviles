@@ -25,5 +25,22 @@
             android:name="com.example.proyectofinal_moviles.MainActivity"
             android:exported="false" />
 
+        <!-- Pantallas base para que cada integrante desarrolle su parte -->
+        <activity
+            android:name="com.example.proyecto_final.ModulosActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.proyecto_final.EvaluacionesActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.proyecto_final.SimuladorActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.proyecto_final.MiProgresoActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.proyecto_final.LogrosActivity"
+            android:exported="false" />
+
     </application>
 </manifest>
