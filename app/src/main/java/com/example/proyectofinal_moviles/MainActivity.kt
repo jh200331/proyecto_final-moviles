@@ -217,11 +217,11 @@ val HexagonShape = GenericShape { size, _ ->
 fun MenuGrid() {
     val context = LocalContext.current
     val items = listOf(
-        MenuDataItem("Módulos", "6 disponibles", imageRes = R.drawable.modulos_inicio, activity = ModulosActivity::class.java),
-        MenuDataItem("Evaluaciones", "Pon a prueba tus conocimientos", imageRes = R.drawable.evaluacion_inicio, activity = EvaluacionesActivity::class.java),
-        MenuDataItem("Simulador", "Entrena ante ataques reales", imageRes = R.drawable.simulador_inicio, activity = SimuladorActivity::class.java),
-        MenuDataItem("Mi progreso", "Consulta tu avance", imageRes = R.drawable.progreso_inicio, activity = MiProgresoActivity::class.java),
-        MenuDataItem("Logros", "Desbloquea recompensas", imageRes = R.drawable.logros_inicio, activity = LogrosActivity::class.java),
+        MenuDataItem("Módulos", "6 módulos educativos", icon = Icons.Filled.MenuBook, activity = ModulosActivity::class.java),
+        MenuDataItem("Evaluaciones", "Pon a prueba tus conocimientos", icon = Icons.Filled.Quiz, activity = EvaluacionesActivity::class.java),
+        MenuDataItem("Simulador", "Entrena ante ataques reales", icon = Icons.Filled.VideogameAsset, activity = SimuladorActivity::class.java),
+        MenuDataItem("Mi progreso", "Consulta tu avance", icon = Icons.Filled.TrendingUp, activity = MiProgresoActivity::class.java),
+        MenuDataItem("Logros", "Desbloquea recompensas", icon = Icons.Filled.EmojiEvents, activity = LogrosActivity::class.java),
     )
 
     LazyVerticalGrid(

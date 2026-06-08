@@ -41,6 +41,18 @@
         <activity
             android:name="com.example.proyecto_final.LogrosActivity"
             android:exported="false" />
+        <activity
+            android:name="com.example.proyecto_final.ModuleDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.proyecto_final.LessonActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.proyecto_final.ModuleQuizActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.proyecto_final.CertificateActivity"
+            android:exported="false" />
 
     </application>
 </manifest>

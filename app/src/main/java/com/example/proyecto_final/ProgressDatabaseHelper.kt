@@ -4,6 +4,11 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.example.proyecto_final.learning.GamificationHelper
+import com.example.proyecto_final.learning.LearningContent
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 data class ProgressRecord(
     val moduleId: Int,
@@ -17,10 +22,34 @@ data class ProgressRecord(
 class ProgressDatabaseHelper(context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+
     override fun onCreate(db: SQLiteDatabase) {
+        createProgressTable(db)
+        createUserProfileTable(db)
+        createLessonProgressTable(db)
+        createQuizResultsTable(db)
+        createBadgesTable(db)
+        createAchievementsTable(db)
+        seedInitialData(db)
+    }
+
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        if (oldVersion < 2) {
+            createUserProfileTable(db)
+            createLessonProgressTable(db)
+            createQuizResultsTable(db)
+            createBadgesTable(db)
+            createAchievementsTable(db)
+            seedLessonsAndGamification(db)
+            seedUserProfile(db)
+        }
+    }
+
+    private fun createProgressTable(db: SQLiteDatabase) {
         db.execSQL(
             """
-            CREATE TABLE progress (
+            CREATE TABLE IF NOT EXISTS progress (
                 module_id INTEGER PRIMARY KEY,
                 module_name TEXT NOT NULL,
                 module_percent INTEGER NOT NULL,
@@ -30,25 +59,148 @@ class ProgressDatabaseHelper(context: Context) :
             )
             """.trimIndent()
         )
-        seedInitialProgress(db)
     }
 
-    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        db.execSQL("DROP TABLE IF EXISTS progress")
-        onCreate(db)
+    private fun createUserProfileTable(db: SQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS user_profile (
+                id INTEGER PRIMARY KEY DEFAULT 1,
+                total_xp INTEGER NOT NULL DEFAULT 0,
+                user_level INTEGER NOT NULL DEFAULT 1,
+                level_title TEXT NOT NULL DEFAULT 'Novato Digital',
+                certificate_issued INTEGER NOT NULL DEFAULT 0
+            )
+            """.trimIndent()
+        )
+    }
+
+    private fun createLessonProgressTable(db: SQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS lesson_progress (
+                lesson_id INTEGER PRIMARY KEY,
+                module_id INTEGER NOT NULL,
+                completed INTEGER NOT NULL DEFAULT 0,
+                completed_at TEXT
+            )
+            """.trimIndent()
+        )
+    }
+
+    private fun createQuizResultsTable(db: SQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS quiz_results (
+                module_id INTEGER PRIMARY KEY,
+                score INTEGER NOT NULL DEFAULT 0,
+                total_questions INTEGER NOT NULL DEFAULT 10,
+                passed INTEGER NOT NULL DEFAULT 0,
+                completed_at TEXT
+            )
+            """.trimIndent()
+        )
+    }
+
+    private fun createBadgesTable(db: SQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS badges (
+                badge_id TEXT PRIMARY KEY,
+                module_id INTEGER,
+                name TEXT NOT NULL,
+                description TEXT NOT NULL,
+                unlocked INTEGER NOT NULL DEFAULT 0,
+                unlocked_at TEXT
+            )
+            """.trimIndent()
+        )
+    }
+
+    private fun createAchievementsTable(db: SQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS achievements (
+                achievement_id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                description TEXT NOT NULL,
+                unlocked INTEGER NOT NULL DEFAULT 0,
+                unlocked_at TEXT
+            )
+            """.trimIndent()
+        )
+    }
+
+    private fun seedInitialData(db: SQLiteDatabase) {
+        seedInitialProgress(db)
+        seedLessonsAndGamification(db)
+        seedUserProfile(db)
+    }
+
+    private fun seedInitialProgress(db: SQLiteDatabase) {
+        AppData.modules.forEach { module ->
+            val values = ContentValues().apply {
+                put("module_id", module.id)
+                put("module_name", module.title)
+                put("module_percent", 0)
+                put("evaluation_percent", 0)
+                put("simulation_percent", 0)
+                put("xp", 0)
+            }
+            db.insertWithOnConflict("progress", null, values, SQLiteDatabase.CONFLICT_IGNORE)
+        }
+    }
+
+    private fun seedLessonsAndGamification(db: SQLiteDatabase) {
+        LearningContent.allLessons().forEach { lesson ->
+            val values = ContentValues().apply {
+                put("lesson_id", lesson.id)
+                put("module_id", lesson.moduleId)
+                put("completed", 0)
+            }
+            db.insertWithOnConflict("lesson_progress", null, values, SQLiteDatabase.CONFLICT_IGNORE)
+        }
+        LearningContent.allModules().forEach { module ->
+            val values = ContentValues().apply {
+                put("badge_id", "badge_module_${module.id}")
+                put("module_id", module.id)
+                put("name", "Insignia: ${module.title}")
+                put("description", "Completaste el módulo ${module.title}")
+                put("unlocked", 0)
+            }
+            db.insertWithOnConflict("badges", null, values, SQLiteDatabase.CONFLICT_IGNORE)
+        }
+        listOf(
+            Triple("first_lesson", "Primera lección", "Completaste tu primera lección"),
+            Triple("first_quiz", "Primer cuestionario", "Aprobaste tu primer cuestionario"),
+            Triple("three_modules", "Tres módulos", "Completaste 3 módulos"),
+            Triple("all_modules", "Maestro CyberLearn", "Completaste los 6 módulos"),
+            Triple("perfect_quiz", "Perfección", "Obtuviste 10/10 en un cuestionario")
+        ).forEach { (id, name, desc) ->
+            val values = ContentValues().apply {
+                put("achievement_id", id)
+                put("name", name)
+                put("description", desc)
+                put("unlocked", 0)
+            }
+            db.insertWithOnConflict("achievements", null, values, SQLiteDatabase.CONFLICT_IGNORE)
+        }
+    }
+
+    private fun seedUserProfile(db: SQLiteDatabase) {
+        val values = ContentValues().apply {
+            put("id", 1)
+            put("total_xp", 0)
+            put("user_level", 1)
+            put("level_title", "Novato Digital")
+            put("certificate_issued", 0)
+        }
+        db.insertWithOnConflict("user_profile", null, values, SQLiteDatabase.CONFLICT_IGNORE)
     }
 
     fun getProgress(): List<ProgressRecord> {
         val result = mutableListOf<ProgressRecord>()
-        readableDatabase.query(
-            "progress",
-            null,
-            null,
-            null,
-            null,
-            null,
-            "module_id ASC"
-        ).use { cursor ->
+        readableDatabase.query("progress", null, null, null, null, null, "module_id ASC").use { cursor ->
             while (cursor.moveToNext()) {
                 result.add(
                     ProgressRecord(
@@ -63,6 +215,103 @@ class ProgressDatabaseHelper(context: Context) :
             }
         }
         return result
+    }
+
+    fun isLessonCompleted(lessonId: Int): Boolean {
+        readableDatabase.query(
+            "lesson_progress", arrayOf("completed"),
+            "lesson_id = ?", arrayOf(lessonId.toString()),
+            null, null, null
+        ).use { cursor ->
+            if (cursor.moveToFirst()) {
+                return cursor.getInt(0) == 1
+            }
+        }
+        return false
+    }
+
+    fun getCompletedLessonsCount(moduleId: Int): Int {
+        readableDatabase.rawQuery(
+            "SELECT COUNT(*) FROM lesson_progress WHERE module_id = ? AND completed = 1",
+            arrayOf(moduleId.toString())
+        ).use { cursor ->
+            if (cursor.moveToFirst()) return cursor.getInt(0)
+        }
+        return 0
+    }
+
+    fun completeLesson(lessonId: Int, moduleId: Int): Boolean {
+        if (isLessonCompleted(lessonId)) return false
+        val now = dateFormat.format(Date())
+        val values = ContentValues().apply {
+            put("completed", 1)
+            put("completed_at", now)
+        }
+        writableDatabase.update("lesson_progress", values, "lesson_id = ?", arrayOf(lessonId.toString()))
+
+        val completed = getCompletedLessonsCount(moduleId)
+        val percent = GamificationHelper.lessonPercent(completed)
+        val current = getProgress().find { it.moduleId == moduleId }
+        val newXp = (current?.xp ?: 0) + GamificationHelper.XP_PER_LESSON
+        updateProgress(moduleId, percent, current?.evaluationPercent ?: 0, current?.simulationPercent ?: 0, newXp)
+        addTotalXp(GamificationHelper.XP_PER_LESSON)
+
+        if (percent >= 100) {
+            unlockBadge("badge_module_$moduleId")
+            addTotalXp(GamificationHelper.XP_PER_MODULE_COMPLETE)
+            checkAchievement("three_modules") { getCompletedModulesCount() >= 3 }
+            checkAchievement("all_modules") { getCompletedModulesCount() >= 6 }
+        }
+        checkAchievement("first_lesson") { getTotalCompletedLessons() >= 1 }
+        checkCertificate()
+        return true
+    }
+
+    fun saveQuizResult(moduleId: Int, score: Int, total: Int): Boolean {
+        val passed = score >= GamificationHelper.QUIZ_PASS_THRESHOLD
+        val now = dateFormat.format(Date())
+        val values = ContentValues().apply {
+            put("module_id", moduleId)
+            put("score", score)
+            put("total_questions", total)
+            put("passed", if (passed) 1 else 0)
+            put("completed_at", now)
+        }
+        writableDatabase.insertWithOnConflict("quiz_results", null, values, SQLiteDatabase.CONFLICT_REPLACE)
+
+        if (passed) {
+            val current = getProgress().find { it.moduleId == moduleId }
+            val evalPercent = (score * 100 / total).coerceIn(0, 100)
+            val newXp = (current?.xp ?: 0) + GamificationHelper.XP_PER_QUIZ_PASS
+            updateProgress(
+                moduleId,
+                current?.modulePercent ?: 0,
+                evalPercent,
+                current?.simulationPercent ?: 0,
+                newXp
+            )
+            addTotalXp(GamificationHelper.XP_PER_QUIZ_PASS)
+            checkAchievement("first_quiz") { hasAnyPassedQuiz() }
+            checkAchievement("perfect_quiz") { score == total }
+        }
+        return passed
+    }
+
+    fun getQuizResult(moduleId: Int): Triple<Int, Int, Boolean>? {
+        readableDatabase.query(
+            "quiz_results", null,
+            "module_id = ?", arrayOf(moduleId.toString()),
+            null, null, null
+        ).use { cursor ->
+            if (cursor.moveToFirst()) {
+                return Triple(
+                    cursor.getInt(cursor.getColumnIndexOrThrow("score")),
+                    cursor.getInt(cursor.getColumnIndexOrThrow("total_questions")),
+                    cursor.getInt(cursor.getColumnIndexOrThrow("passed")) == 1
+                )
+            }
+        }
+        return null
     }
 
     fun updateProgress(
@@ -81,22 +330,132 @@ class ProgressDatabaseHelper(context: Context) :
         writableDatabase.update("progress", values, "module_id = ?", arrayOf(moduleId.toString()))
     }
 
-    private fun seedInitialProgress(db: SQLiteDatabase) {
-        AppData.modules.forEach { module ->
-            val values = ContentValues().apply {
-                put("module_id", module.id)
-                put("module_name", module.title)
-                put("module_percent", 0)
-                put("evaluation_percent", 0)
-                put("simulation_percent", 0)
-                put("xp", 0)
+    fun getTotalXp(): Int {
+        readableDatabase.query("user_profile", arrayOf("total_xp"), "id = 1", null, null, null, null)
+            .use { cursor ->
+                if (cursor.moveToFirst()) return cursor.getInt(0)
             }
-            db.insert("progress", null, values)
+        return 0
+    }
+
+    fun getUserLevel(): Pair<Int, String> {
+        readableDatabase.query(
+            "user_profile", arrayOf("user_level", "level_title"),
+            "id = 1", null, null, null, null
+        ).use { cursor ->
+            if (cursor.moveToFirst()) {
+                return cursor.getInt(0) to cursor.getString(1)
+            }
         }
+        return 1 to "Novato Digital"
+    }
+
+    fun isCertificateIssued(): Boolean {
+        readableDatabase.query("user_profile", arrayOf("certificate_issued"), "id = 1", null, null, null, null)
+            .use { cursor ->
+                if (cursor.moveToFirst()) return cursor.getInt(0) == 1
+            }
+        return false
+    }
+
+    fun getBadges(): List<Pair<String, Boolean>> {
+        val result = mutableListOf<Pair<String, Boolean>>()
+        readableDatabase.query("badges", null, null, null, null, null, "module_id ASC").use { cursor ->
+            while (cursor.moveToNext()) {
+                result.add(
+                    cursor.getString(cursor.getColumnIndexOrThrow("name")) to
+                        (cursor.getInt(cursor.getColumnIndexOrThrow("unlocked")) == 1)
+                )
+            }
+        }
+        return result
+    }
+
+    fun getUnlockedBadgesCount(): Int {
+        readableDatabase.rawQuery("SELECT COUNT(*) FROM badges WHERE unlocked = 1", null).use { cursor ->
+            if (cursor.moveToFirst()) return cursor.getInt(0)
+        }
+        return 0
+    }
+
+    fun getAchievements(): List<Triple<String, String, Boolean>> {
+        val result = mutableListOf<Triple<String, String, Boolean>>()
+        readableDatabase.query("achievements", null, null, null, null, null, null).use { cursor ->
+            while (cursor.moveToNext()) {
+                result.add(
+                    Triple(
+                        cursor.getString(cursor.getColumnIndexOrThrow("name")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("description")),
+                        cursor.getInt(cursor.getColumnIndexOrThrow("unlocked")) == 1
+                    )
+                )
+            }
+        }
+        return result
+    }
+
+    private fun addTotalXp(amount: Int) {
+        val current = getTotalXp() + amount
+        val (level, title) = com.example.proyecto_final.learning.GamificationHelper.calculateLevel(current)
+        val values = ContentValues().apply {
+            put("total_xp", current)
+            put("user_level", level)
+            put("level_title", title)
+        }
+        writableDatabase.update("user_profile", values, "id = 1", null)
+    }
+
+    private fun unlockBadge(badgeId: String) {
+        val values = ContentValues().apply {
+            put("unlocked", 1)
+            put("unlocked_at", dateFormat.format(Date()))
+        }
+        writableDatabase.update("badges", values, "badge_id = ?", arrayOf(badgeId))
+    }
+
+    private fun checkAchievement(id: String, condition: () -> Boolean) {
+        if (!condition()) return
+        val values = ContentValues().apply {
+            put("unlocked", 1)
+            put("unlocked_at", dateFormat.format(Date()))
+        }
+        writableDatabase.update("achievements", values, "achievement_id = ? AND unlocked = 0", arrayOf(id))
+    }
+
+    private fun getCompletedModulesCount(): Int =
+        getProgress().count { it.modulePercent >= 100 }
+
+    private fun getTotalCompletedLessons(): Int {
+        readableDatabase.rawQuery("SELECT COUNT(*) FROM lesson_progress WHERE completed = 1", null)
+            .use { cursor ->
+                if (cursor.moveToFirst()) return cursor.getInt(0)
+            }
+        return 0
+    }
+
+    private fun hasAnyPassedQuiz(): Boolean {
+        readableDatabase.rawQuery("SELECT COUNT(*) FROM quiz_results WHERE passed = 1", null)
+            .use { cursor ->
+                if (cursor.moveToFirst()) return cursor.getInt(0) > 0
+            }
+        return false
+    }
+
+    private fun checkCertificate() {
+        if (getCompletedModulesCount() >= 6) {
+            val values = ContentValues().apply { put("certificate_issued", 1) }
+            writableDatabase.update("user_profile", values, "id = 1", null)
+        }
+    }
+
+    fun isModuleUnlocked(moduleId: Int): Boolean {
+        if (moduleId == 1) return true
+        val previous = getProgress().find { it.moduleId == moduleId - 1 }
+        return (previous?.modulePercent ?: 0) >= 100
     }
 
     private companion object {
         const val DATABASE_NAME = "cyberedu_progress.db"
-        const val DATABASE_VERSION = 1
+        const val DATABASE_VERSION = 2
     }
 }

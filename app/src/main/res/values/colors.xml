@@ -16,4 +16,12 @@
     <color name="logros_dorado">#D99A00</color>
     <color name="logros_bronce">#A96A15</color>
     <color name="logros_acero">#6D8FB3</color>
+    <color name="card_background">#FFFFFF</color>
+    <color name="card_stroke">#DDE7F5</color>
+    <color name="text_primary">#152640</color>
+    <color name="text_muted">#5A6980</color>
+    <color name="purple_accent">#6C3CE8</color>
+    <color name="green_accent">#00A86B</color>
+    <color name="gradient_start">#0B63F6</color>
+    <color name="gradient_end">#6C3CE8</color>
 </resources>
