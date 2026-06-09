@@ -4,7 +4,8 @@
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorSecondary">@color/accent</item>
-        <item name="android:fontFamily">sans</item>
+        <item name="android:fontFamily">serif</item>
+        <item name="fontFamily">serif</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
 </resources>

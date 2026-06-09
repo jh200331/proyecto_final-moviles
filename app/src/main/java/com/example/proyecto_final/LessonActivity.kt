@@ -65,8 +65,8 @@ class LessonActivity : CyberBaseActivity() {
                 TextView(this@LessonActivity).apply {
                     text = "💭 ${lesson.reflectionQuestion}"
                     setTextColor(textDark)
-                    textSize = 15f
-                    typeface = Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
+                    textSize = 17f
+                    typeface = Typeface.create(Typeface.SERIF, Typeface.ITALIC)
                     setLineSpacing(4f, 1.1f)
                     layoutParams = blockParams(bottom = 8)
                 }
@@ -78,8 +78,8 @@ class LessonActivity : CyberBaseActivity() {
                 TextView(this).apply {
                     text = "✅ Lección completada  •  +${GamificationHelper.XP_PER_LESSON} XP"
                     setTextColor(greenAccent)
-                    textSize = 14f
-                    typeface = Typeface.DEFAULT_BOLD
+                    textSize = 16f
+                    typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
                     layoutParams = blockParams(bottom = 8)
                 }
             )

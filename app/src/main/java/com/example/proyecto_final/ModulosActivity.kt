@@ -53,13 +53,14 @@ class ModulosActivity : CyberBaseActivity() {
                 col.addView(TextView(this@ModulosActivity).apply {
                     text = value
                     setTextColor(Color.WHITE)
-                    textSize = 16f
-                    typeface = Typeface.DEFAULT_BOLD
+                    textSize = 18f
+                    typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
                 })
                 col.addView(TextView(this@ModulosActivity).apply {
                     text = label
                     setTextColor(Color.argb(180, 255, 255, 255))
-                    textSize = 11f
+                    textSize = 13f
+                    typeface = Typeface.SERIF
                 })
                 statsRow.addView(col)
             }
@@ -85,7 +86,8 @@ class ModulosActivity : CyberBaseActivity() {
                     TextView(this@ModulosActivity).apply {
                         text = if (badge.unlocked) "🏅 ${badge.name}" else "🔒 ${badge.name}"
                         setTextColor(if (badge.unlocked) greenAccent else textMuted)
-                        textSize = 13f
+                        textSize = 15f
+                        typeface = Typeface.SERIF
                         layoutParams = blockParams(bottom = 4)
                     }
                 )
@@ -108,7 +110,8 @@ class ModulosActivity : CyberBaseActivity() {
                         text = if (achievement.unlocked) "🎖 ${achievement.name}: ${achievement.description}"
                         else "🔒 ${achievement.name}: ${achievement.description}"
                         setTextColor(if (achievement.unlocked) textDark else textMuted)
-                        textSize = 12f
+                        textSize = 14f
+                        typeface = Typeface.SERIF
                         layoutParams = blockParams(bottom = 4)
                     }
                 )
@@ -122,7 +125,7 @@ class ModulosActivity : CyberBaseActivity() {
                     else GamificationHelper.MotivationContext.LESSON_COMPLETE
                 )
                 setTextColor(purpleAccent)
-                textSize = 13f
+                textSize = 15f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
                 layoutParams = blockParams(bottom = 12)
             }
@@ -132,8 +135,8 @@ class ModulosActivity : CyberBaseActivity() {
             TextView(this).apply {
                 text = "Módulos de aprendizaje"
                 setTextColor(textDark)
-                textSize = 20f
-                typeface = Typeface.DEFAULT_BOLD
+                textSize = 22f
+                typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
                 layoutParams = blockParams(bottom = 10)
             }
         )

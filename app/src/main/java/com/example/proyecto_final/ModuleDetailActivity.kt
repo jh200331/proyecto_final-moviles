@@ -56,8 +56,8 @@ class ModuleDetailActivity : CyberBaseActivity() {
                         ModuleStatus.LOCKED -> "Estado: Bloqueado 🔒"
                     }
                     setTextColor(greenAccent)
-                    textSize = 13f
-                    typeface = Typeface.DEFAULT_BOLD
+                    textSize = 15f
+                    typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
                     layoutParams = blockParams(bottom = 6)
                 }
             )
@@ -68,8 +68,8 @@ class ModuleDetailActivity : CyberBaseActivity() {
             TextView(this).apply {
                 text = "Lecciones"
                 setTextColor(textDark)
-                textSize = 18f
-                typeface = Typeface.DEFAULT_BOLD
+                textSize = 20f
+                typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
                 layoutParams = blockParams(top = 4, bottom = 8)
             }
         )
@@ -83,7 +83,8 @@ class ModuleDetailActivity : CyberBaseActivity() {
                     TextView(this@ModuleDetailActivity).apply {
                         text = if (completed) "✅ Completada" else "Pendiente"
                         setTextColor(if (completed) greenAccent else textMuted)
-                        textSize = 12f
+                        textSize = 14f
+                        typeface = Typeface.SERIF
                         layoutParams = blockParams(bottom = 6)
                     }
                 )
@@ -107,8 +108,8 @@ class ModuleDetailActivity : CyberBaseActivity() {
                     TextView(this@ModuleDetailActivity).apply {
                         text = "✅ Aprobado: ${quiz.quizScore}/10"
                         setTextColor(greenAccent)
-                        textSize = 14f
-                        typeface = Typeface.DEFAULT_BOLD
+                        textSize = 16f
+                        typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
                         layoutParams = blockParams(bottom = 6)
                     }
                 )

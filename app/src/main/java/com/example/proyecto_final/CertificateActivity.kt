@@ -23,38 +23,44 @@ class CertificateActivity : CyberBaseActivity() {
         if (!profile.certificateIssued) {
             card {
                 addView(title("Certificado no disponible"))
-                addView(paragraph("Completa los 6 módulos de aprendizaje para obtener tu certificado digital."))
-                addView(paragraph("Progreso: ${repository.getCompletedModulesCount()}/6 módulos completados"))
+                addView(paragraph("Completa los 6 modulos de aprendizaje para obtener tu certificado digital."))
+                addView(paragraph("Progreso: ${repository.getCompletedModulesCount()}/6 modulos completados"))
             }
-            addView(outlineButton("Volver a módulos") { finish() })
+            addView(outlineButton("Volver a modulos") { finish() })
             return
         }
 
         gradientCard {
             addView(
                 TextView(this@CertificateActivity).apply {
-                    text = "🎓"
-                    textSize = 48f
+                    text = "CERT"
+                    textSize = 50f
+                    typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
                     gravity = android.view.Gravity.CENTER
                     layoutParams = blockParams(bottom = 8)
                 }
             )
-            addView(whiteTitle("Certificado de Finalización"))
-            addView(whiteParagraph("CyberLearn - Educación en Ciberseguridad"))
+            addView(whiteTitle("Certificado de Finalizacion"))
+            addView(whiteParagraph("CyberLearn - Educacion en Ciberseguridad"))
             addView(
                 TextView(this@CertificateActivity).apply {
-                    text = "Se certifica que el estudiante ha completado exitosamente los 6 módulos del programa de ciberseguridad CyberLearn, demostrando conocimientos en:"
+                    text = "Se certifica que el estudiante ha completado exitosamente los 6 modulos del programa de ciberseguridad CyberLearn, demostrando conocimientos en:"
                     setTextColor(Color.argb(220, 255, 255, 255))
-                    textSize = 14f
+                    textSize = 16f
+                    typeface = Typeface.SERIF
                     setLineSpacing(4f, 1.1f)
                     layoutParams = blockParams(top = 12, bottom = 8)
                 }
             )
             listOf(
-                "Contraseñas Seguras", "Phishing", "Navegación Segura",
-                "Protección de Datos", "Redes Wi-Fi Seguras", "Ingeniería Social"
-            ).forEach { mod ->
-                addView(whiteParagraph("✓ $mod"))
+                "Contrasenas Seguras",
+                "Phishing",
+                "Navegacion Segura",
+                "Proteccion de Datos",
+                "Redes Wi-Fi Seguras",
+                "Ingenieria Social"
+            ).forEach { module ->
+                addView(whiteParagraph("- $module"))
             }
         }
 
@@ -63,18 +69,18 @@ class CertificateActivity : CyberBaseActivity() {
             addView(paragraph("Nivel alcanzado: ${profile.level} - ${profile.levelTitle}"))
             addView(paragraph("Experiencia total: ${profile.totalXp} XP"))
             addView(paragraph("Insignias obtenidas: ${repository.getUnlockedBadgesCount()}/6"))
-            addView(paragraph("Fecha de emisión: $date"))
+            addView(paragraph("Fecha de emision: $date"))
             addView(
                 TextView(this@CertificateActivity).apply {
                     text = "ID: CYBER-${profile.totalXp}-${System.currentTimeMillis().toString().takeLast(6)}"
                     setTextColor(accent)
-                    textSize = 12f
+                    textSize = 14f
                     typeface = Typeface.MONOSPACE
                     layoutParams = blockParams(top = 8)
                 }
             )
         }
 
-        addView(primaryButton("Volver a módulos") { finish() })
+        addView(primaryButton("Volver a modulos") { finish() })
     }
 }

@@ -39,8 +39,8 @@ InicioActivity : CyberBaseActivity() {
             TextView(this).apply {
                 text = "ESEIT"
                 setTextColor(Color.WHITE)
-                textSize = 30f
-                typeface = Typeface.DEFAULT_BOLD
+                textSize = 31f
+                typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
                 gravity = Gravity.CENTER
                 layoutParams = blockParams(bottom = 6)
             }
@@ -49,8 +49,8 @@ InicioActivity : CyberBaseActivity() {
             TextView(this).apply {
                 text = "CyberEdu"
                 setTextColor(Color.WHITE)
-                textSize = 28f
-                typeface = Typeface.DEFAULT_BOLD
+                textSize = 29f
+                typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
                 gravity = Gravity.CENTER
                 layoutParams = blockParams(bottom = 8)
             }
@@ -59,7 +59,8 @@ InicioActivity : CyberBaseActivity() {
             TextView(this).apply {
                 text = "Plataforma educativa para aprender seguridad informatica por modulos."
                 setTextColor(Color.rgb(205, 224, 255))
-                textSize = 14f
+                textSize = 15f
+                typeface = Typeface.SERIF
                 gravity = Gravity.CENTER
             }
         )
@@ -80,8 +81,8 @@ InicioActivity : CyberBaseActivity() {
             TextView(this).apply {
                 text = "Que deseas aprender hoy?"
                 setTextColor(textDark)
-                textSize = 17f
-                typeface = Typeface.DEFAULT_BOLD
+                textSize = 18f
+                typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
                 layoutParams = blockParams(bottom = 10)
             }
         )

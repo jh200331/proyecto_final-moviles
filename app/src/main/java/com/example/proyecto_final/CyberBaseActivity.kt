@@ -91,8 +91,8 @@ abstract class CyberBaseActivity : AppCompatActivity() {
             TextView(this).apply {
                 text = screenTitle
                 setTextColor(blueDark)
-                textSize = 24f
-                typeface = Typeface.DEFAULT_BOLD
+                textSize = 27f
+                typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
                 layoutParams = blockParams(bottom = 4)
             }
         )
@@ -100,7 +100,8 @@ abstract class CyberBaseActivity : AppCompatActivity() {
             TextView(this).apply {
                 text = screenSubtitle
                 setTextColor(textMuted)
-                textSize = 14f
+                textSize = 16f
+                typeface = Typeface.SERIF
                 layoutParams = blockParams(bottom = 16)
             }
         )
@@ -143,23 +144,24 @@ abstract class CyberBaseActivity : AppCompatActivity() {
     protected fun title(text: String): TextView = TextView(this).apply {
         this.text = text
         setTextColor(textDark)
-        textSize = 18f
-        typeface = Typeface.DEFAULT_BOLD
+        textSize = 20f
+        typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
         layoutParams = blockParams(bottom = 6)
     }
 
     protected fun whiteTitle(text: String): TextView = TextView(this).apply {
         this.text = text
         setTextColor(Color.WHITE)
-        textSize = 18f
-        typeface = Typeface.DEFAULT_BOLD
+        textSize = 20f
+        typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
         layoutParams = blockParams(bottom = 6)
     }
 
     protected fun whiteParagraph(text: String): TextView = TextView(this).apply {
         this.text = text
         setTextColor(Color.argb(200, 255, 255, 255))
-        textSize = 14f
+        textSize = 16f
+        typeface = Typeface.SERIF
         setLineSpacing(2f, 1.08f)
         layoutParams = blockParams(bottom = 6)
     }
@@ -167,7 +169,8 @@ abstract class CyberBaseActivity : AppCompatActivity() {
     protected fun paragraph(text: String): TextView = TextView(this).apply {
         this.text = text
         setTextColor(textMuted)
-        textSize = 14f
+        textSize = 16f
+        typeface = Typeface.SERIF
         setLineSpacing(2f, 1.08f)
         layoutParams = blockParams(bottom = 8)
     }
@@ -175,16 +178,16 @@ abstract class CyberBaseActivity : AppCompatActivity() {
     protected fun label(text: String): TextView = TextView(this).apply {
         this.text = text
         setTextColor(accent)
-        textSize = 13f
-        typeface = Typeface.DEFAULT_BOLD
+        textSize = 15f
+        typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
         layoutParams = blockParams(bottom = 6)
     }
 
     protected fun sectionLabel(text: String): TextView = TextView(this).apply {
         this.text = text
         setTextColor(purpleAccent)
-        textSize = 15f
-        typeface = Typeface.DEFAULT_BOLD
+        textSize = 17f
+        typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
         layoutParams = blockParams(top = 8, bottom = 4)
     }
 
@@ -199,8 +202,8 @@ abstract class CyberBaseActivity : AppCompatActivity() {
         return TextView(this).apply {
             this.text = text
             setTextColor(fg)
-            textSize = 11f
-            typeface = Typeface.DEFAULT_BOLD
+            textSize = 13f
+            typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
             setPadding(dp(10), dp(4), dp(10), dp(4))
             background = GradientDrawable().apply {
                 setColor(bg)
@@ -218,6 +221,8 @@ abstract class CyberBaseActivity : AppCompatActivity() {
             this.text = text
             isAllCaps = false
             cornerRadius = dp(12)
+            textSize = 16f
+            typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
             setTextColor(Color.WHITE)
             setBackgroundColor(accent)
             layoutParams = blockParams(top = 6)
@@ -230,6 +235,8 @@ abstract class CyberBaseActivity : AppCompatActivity() {
             this.text = text
             isAllCaps = false
             cornerRadius = dp(12)
+            textSize = 16f
+            typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
             setTextColor(blue)
             setBackgroundColor(cardBg)
             strokeWidth = dp(1)
@@ -248,8 +255,8 @@ abstract class CyberBaseActivity : AppCompatActivity() {
             TextView(this).apply {
                 text = "$label  $percent%"
                 setTextColor(textDark)
-                textSize = 13f
-                typeface = Typeface.DEFAULT_BOLD
+                textSize = 15f
+                typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
                 layoutParams = blockParams(bottom = 4)
             }
         )
@@ -300,8 +307,8 @@ abstract class CyberBaseActivity : AppCompatActivity() {
                 TextView(this@CyberBaseActivity).apply {
                     text = module.difficulty
                     setTextColor(purpleAccent)
-                    textSize = 11f
-                    typeface = Typeface.DEFAULT_BOLD
+                    textSize = 13f
+                    typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
                 }
             )
             header.addView(info)
@@ -313,7 +320,8 @@ abstract class CyberBaseActivity : AppCompatActivity() {
                 TextView(this@CyberBaseActivity).apply {
                     text = "⏱ ${module.estimatedMinutes} min  •  ${progress.lessonsCompleted}/${progress.totalLessons} lecciones"
                     setTextColor(textMuted)
-                    textSize = 12f
+                    textSize = 14f
+                    typeface = Typeface.SERIF
                     layoutParams = blockParams(bottom = 6)
                 }
             )
@@ -324,7 +332,8 @@ abstract class CyberBaseActivity : AppCompatActivity() {
                     TextView(this@CyberBaseActivity).apply {
                         text = "🔒 Completa el módulo anterior al 100% para desbloquear"
                         setTextColor(textMuted)
-                        textSize = 12f
+                        textSize = 14f
+                        typeface = Typeface.SERIF
                         layoutParams = blockParams(bottom = 4)
                     }
                 )
@@ -401,7 +410,8 @@ abstract class CyberBaseActivity : AppCompatActivity() {
                 MaterialButton(this).apply {
                     this.text = text
                     isAllCaps = false
-                    textSize = 11f
+                    textSize = 13f
+                    typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
                     cornerRadius = dp(10)
                     setTextColor(if (clazz == ModulosActivity::class.java) accent else blue)
                     setBackgroundColor(cardBg)

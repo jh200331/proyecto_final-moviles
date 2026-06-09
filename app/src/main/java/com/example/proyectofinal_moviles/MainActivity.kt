@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -105,7 +106,8 @@ fun HeaderSection() {
             text = "CyberLearn",
             color = Color.White,
             fontWeight = FontWeight.ExtraBold,
-            fontSize = 20.sp,
+            fontFamily = FontFamily.Serif,
+            fontSize = 21.sp,
             modifier = Modifier.align(Alignment.Center)
         )
     }
@@ -144,7 +146,8 @@ fun LevelCard() {
                             text = "4",
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 22.sp
+                            fontFamily = FontFamily.Serif,
+                            fontSize = 23.sp
                         )
                     }
                     Spacer(modifier = Modifier.width(16.dp))
@@ -152,14 +155,16 @@ fun LevelCard() {
                         Text(
                             text = "Nivel actual",
                             color = Color.White.copy(alpha = 0.7f),
-                            fontSize = 12.sp,
+                            fontFamily = FontFamily.Serif,
+                            fontSize = 13.sp,
                             fontWeight = FontWeight.Medium
                         )
                         Text(
                             text = "Defensor Digital",
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
+                            fontFamily = FontFamily.Serif,
+                            fontSize = 19.sp
                         )
                     }
                 }
@@ -168,14 +173,16 @@ fun LevelCard() {
                     Text(
                         text = "XP Total",
                         color = Color.White.copy(alpha = 0.7f),
-                        fontSize = 12.sp,
+                        fontFamily = FontFamily.Serif,
+                        fontSize = 13.sp,
                         fontWeight = FontWeight.Medium
                     )
                     Text(
                         text = "1.250",
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
+                        fontFamily = FontFamily.Serif,
+                        fontSize = 19.sp
                     )
                 }
             }
@@ -194,7 +201,8 @@ fun LevelCard() {
                 Text(
                     text = "XP para el siguiente nivel: 250",
                     color = Color.White.copy(alpha = 0.7f),
-                    fontSize = 12.sp
+                    fontFamily = FontFamily.Serif,
+                    fontSize = 13.sp
                 )
             }
         }
@@ -299,15 +307,17 @@ fun MenuCardItem(item: MenuDataItem, onClick: () -> Unit) {
                 Text(
                     text = item.title,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
+                    fontFamily = FontFamily.Serif,
+                    fontSize = 17.sp,
                     color = EseitNavyColor
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = item.subtitle,
-                    fontSize = 12.sp,
+                    fontFamily = FontFamily.Serif,
+                    fontSize = 13.sp,
                     color = Color.Gray,
-                    lineHeight = 14.sp
+                    lineHeight = 15.sp
                 )
             }
         }

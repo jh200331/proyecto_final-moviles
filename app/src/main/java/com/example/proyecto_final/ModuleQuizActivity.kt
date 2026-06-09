@@ -62,8 +62,8 @@ class ModuleQuizActivity : CyberBaseActivity() {
                 TextView(this@ModuleQuizActivity).apply {
                     text = "Pregunta ${currentIndex + 1} de ${questions.size}"
                     setTextColor(accent)
-                    textSize = 13f
-                    typeface = Typeface.DEFAULT_BOLD
+                    textSize = 15f
+                    typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
                     layoutParams = blockParams(bottom = 8)
                 }
             )
@@ -79,7 +79,8 @@ class ModuleQuizActivity : CyberBaseActivity() {
                     RadioButton(this@ModuleQuizActivity).apply {
                         id = View.generateViewId()
                         text = option
-                        textSize = 14f
+                        textSize = 16f
+                        typeface = Typeface.SERIF
                         setTextColor(textDark)
                         setPadding(dp(4), dp(8), dp(4), dp(8))
                         tag = index
@@ -134,8 +135,8 @@ class ModuleQuizActivity : CyberBaseActivity() {
                 TextView(this@ModuleQuizActivity).apply {
                     text = "Resultado: $score/${questions.size} ($percent%)"
                     setTextColor(if (passed) greenAccent else textMuted)
-                    textSize = 20f
-                    typeface = Typeface.DEFAULT_BOLD
+                    textSize = 22f
+                    typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
                     layoutParams = blockParams(bottom = 8)
                 }
             )
@@ -157,7 +158,8 @@ class ModuleQuizActivity : CyberBaseActivity() {
                     TextView(this@ModuleQuizActivity).apply {
                         text = "${if (correct) "✅" else "❌"} P${index + 1}: ${q.explanation}"
                         setTextColor(if (correct) greenAccent else textMuted)
-                        textSize = 12f
+                        textSize = 14f
+                        typeface = Typeface.SERIF
                         layoutParams = blockParams(bottom = 6)
                     }
                 )
