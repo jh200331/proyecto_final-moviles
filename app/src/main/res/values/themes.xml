@@ -1,5 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Proyecto_final" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorSecondary">@color/accent</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="android:statusBarColor">@color/primary_dark</item>
+        <item name="android:fontFamily">serif</item>
+        <item name="fontFamily">serif</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
 
-    <style name="Theme.ProyectoFinal" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.Proyecto_final" parent="Base.Theme.Proyecto_final" />
 </resources>

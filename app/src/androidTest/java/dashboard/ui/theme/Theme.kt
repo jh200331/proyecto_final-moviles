@@ -1,4 +1,4 @@
-package com.example.proyectofinal.ui.theme
+package com.example.dashboard_ciberseguridad.ui.theme
 
 import android.app.Activity
 import android.os.Build
@@ -34,7 +34,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun ProyectoFinalTheme(
+fun DashBoard_CiberseguridadTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,

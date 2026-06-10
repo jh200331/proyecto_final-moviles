@@ -1,8 +1,8 @@
-package com.example.proyectofinal.logros
+package com.example.proyecto_final
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import com.example.proyectofinal.R
+import com.example.proyectofinal_moviles.R
 
 class LogrosActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
