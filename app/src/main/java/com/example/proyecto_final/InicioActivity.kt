@@ -12,7 +12,7 @@ class
 
 InicioActivity : CyberBaseActivity() {
     override val screenTitle: String = "CyberEdu"
-    override val screenSubtitle: String = "Aprende hoy, protege tu mundo manana"
+    override val screenSubtitle: String = "Aprende hoy, protege tu mundo mañana"
     override val showBottomMenu: Boolean = false
 
     override fun buildContent() {
@@ -68,11 +68,21 @@ InicioActivity : CyberBaseActivity() {
     }
 
     private fun stats() {
+
+        val db = ProgressDatabaseHelper(this)
+
+        val totalXp = db.getTotalXp()
+        val (nivel, titulo) = db.getUserLevel()
+
+        val progresoNivel =
+            com.example.proyecto_final.learning.GamificationHelper
+                .xpProgressInCurrentLevel(totalXp)
+
         card {
             addView(label("Nivel actual"))
-            addView(title("Defensor Digital"))
-            addView(progressLine("XP para el siguiente nivel", 30))
-            addView(paragraph("XP total: 1.250"))
+            addView(title("Nivel $nivel · $titulo"))
+            addView(progressLine("XP para el siguiente nivel", progresoNivel, true))
+            addView(paragraph("XP total REAL: $totalXp"))
         }
     }
 
@@ -118,5 +128,14 @@ InicioActivity : CyberBaseActivity() {
             addView(paragraph(subtitle))
             setOnClickListener { action() }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        content.removeAllViews()
+
+        addHeader()
+        buildContent()
     }
 }
