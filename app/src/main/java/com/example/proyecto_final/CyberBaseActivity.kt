@@ -43,7 +43,7 @@ abstract class CyberBaseActivity : AppCompatActivity() {
 
     abstract val screenTitle: String
     abstract val screenSubtitle: String
-    open val showBottomMenu: Boolean = true
+    open val showBottomMenu: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

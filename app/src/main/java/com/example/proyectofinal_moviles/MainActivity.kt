@@ -33,6 +33,7 @@
     import androidx.compose.ui.unit.sp
     import com.example.proyecto_final.EvaluacionesActivity
     import com.example.proyecto_final.LogrosActivity
+    import com.example.proyecto_final.InformacionActivity
     import com.example.proyecto_final.MiProgresoActivity
     import com.example.proyecto_final.ModulosActivity
     import com.example.proyecto_final.ProgressDatabaseHelper
@@ -41,6 +42,7 @@
     import com.example.proyectofinal_moviles.ui.theme.ProyectoFinal_movilesTheme
     import kotlin.math.cos
     import kotlin.math.sin
+
 
     class MainActivity : ComponentActivity() {
         override fun onCreate(savedInstanceState: Bundle?) {
@@ -243,6 +245,7 @@
             MenuDataItem("Simulador", "Entrena ante ataques reales", icon = Icons.Filled.VideogameAsset, activity = SimuladorActivity::class.java),
             MenuDataItem("Mi progreso", "Consulta tu avance", icon = Icons.Filled.TrendingUp, activity = MiProgresoActivity::class.java),
             MenuDataItem("Logros", "Desbloquea recompensas", icon = Icons.Filled.EmojiEvents, activity = LogrosActivity::class.java),
+            MenuDataItem("Información", "Fuentes y referencias", icon = Icons.Filled.Info, activity = InformacionActivity::class.java)
         )
 
         LazyVerticalGrid(
