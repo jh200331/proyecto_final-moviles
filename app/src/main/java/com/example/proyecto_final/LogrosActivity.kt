@@ -12,7 +12,6 @@ import android.view.WindowManager
 import android.widget.*
 import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
-import com.example.proyecto_final.learning.GamificationHelper
 import com.example.proyecto_final.learning.LearningContent
 import com.example.proyecto_final.learning.LearningRepository
 import com.example.proyectofinal_moviles.R
