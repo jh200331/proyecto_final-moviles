@@ -72,6 +72,7 @@
                         android:src="@drawable/badge_hex_level" />
 
                     <TextView
+                        android:id="@+id/txtNivelNumero"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
@@ -89,6 +90,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/txtRangoActual"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Nivel actual"
@@ -97,6 +99,7 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/txtModulosCompletados"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
@@ -114,12 +117,13 @@
                         android:textSize="15sp" />
 
                     <ProgressBar
+                        android:id="@+id/progressNivelLogros"
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"
                         android:layout_height="10dp"
                         android:layout_marginTop="12dp"
-                        android:max="8"
-                        android:progress="7"
+                        android:max="100"
+                        android:progress="0"
                         android:progressDrawable="@drawable/progress_logros" />
                 </LinearLayout>
             </LinearLayout>

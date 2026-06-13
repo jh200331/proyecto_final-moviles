@@ -34,6 +34,10 @@ class ModuleDetailActivity : CyberBaseActivity() {
         val progress = repository.getModuleProgress(moduleId)
         val lessons = LearningContent.getLessons(moduleId)
         val quiz = repository.getModuleProgress(moduleId)
+        val database = ProgressDatabaseHelper(this)
+        val moduleMastered = progress.lessonPercent >= 100 &&
+            database.getModuleEvaluationPercent(moduleId) >= 100 &&
+            database.getModuleSimulationPercent(moduleId) >= 100
 
         if (!progress.isUnlocked) {
             card {
@@ -48,6 +52,8 @@ class ModuleDetailActivity : CyberBaseActivity() {
         card {
             addView(label("${module.difficulty}  •  ⏱ ${module.estimatedMinutes} min"))
             addView(progressLine("Progreso del módulo", progress.lessonPercent, animate = true))
+            addView(progressLine("Evaluaciones", database.getModuleEvaluationPercent(moduleId), animate = true))
+            addView(progressLine("Simulaciones", database.getModuleSimulationPercent(moduleId), animate = true))
             addView(
                 TextView(this@ModuleDetailActivity).apply {
                     text = when (progress.status) {
@@ -76,6 +82,7 @@ class ModuleDetailActivity : CyberBaseActivity() {
 
         lessons.forEach { lesson ->
             val completed = repository.isLessonCompleted(lesson.id)
+            val evaluation = database.getLessonEvaluationResult(lesson.id)
             card {
                 addView(label("Lección ${lesson.order}"))
                 addView(title(lesson.title))
@@ -88,6 +95,12 @@ class ModuleDetailActivity : CyberBaseActivity() {
                         layoutParams = blockParams(bottom = 6)
                     }
                 )
+                if (completed) {
+                    addView(paragraph(
+                        if (evaluation?.passed == true) "Evaluacion aprobada: ${evaluation.score}/5"
+                        else "Evaluacion pendiente"
+                    ))
+                }
                 addView(
                     primaryButton(if (completed) "Repasar lección" else "Iniciar lección") {
                         startActivity(
@@ -127,15 +140,20 @@ class ModuleDetailActivity : CyberBaseActivity() {
             }
         }
 
-        if (progress.lessonPercent >= 100) {
+        if (moduleMastered) {
             card {
-                addView(label("¡Módulo completado!"))
+                addView(label("Modulo dominado"))
                 addView(paragraph(GamificationHelper.motivationalMessage(
                     GamificationHelper.MotivationContext.MODULE_COMPLETE
                 )))
                 if (moduleId < 6) {
-                    addView(paragraph("El siguiente módulo ha sido desbloqueado."))
+                    addView(paragraph("El siguiente modulo ha sido desbloqueado."))
                 }
+            }
+        } else if (progress.lessonPercent >= 100) {
+            card {
+                addView(label("Lecciones completadas"))
+                addView(paragraph("Completa las 5 evaluaciones y las 5 simulaciones para dominar el modulo, obtener la insignia y desbloquear el siguiente."))
             }
         }
     }

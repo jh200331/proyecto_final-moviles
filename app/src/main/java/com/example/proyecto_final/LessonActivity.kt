@@ -83,6 +83,16 @@ class LessonActivity : CyberBaseActivity() {
                     layoutParams = blockParams(bottom = 8)
                 }
             )
+            val evaluationResult = ProgressDatabaseHelper(this).getLessonEvaluationResult(lessonId)
+            addView(primaryButton(
+                if (evaluationResult?.passed == true) "Repetir evaluacion de la leccion"
+                else "Realizar evaluacion de la leccion"
+            ) {
+                startActivity(
+                    Intent(this, LessonEvaluationActivity::class.java)
+                        .putExtra(LessonEvaluationActivity.EXTRA_LESSON_ID, lessonId)
+                )
+            })
         } else {
             addView(primaryButton("Marcar como completada") {
                 val wasNew = repository.completeLesson(lessonId, lesson.moduleId)
@@ -100,15 +110,12 @@ class LessonActivity : CyberBaseActivity() {
                     MaterialAlertDialogBuilder(this)
                         .setTitle("¡Lección completada!")
                         .setMessage("$message\n\n+${GamificationHelper.XP_PER_LESSON} XP ganados")
-                        .setPositiveButton("Continuar") { _, _ ->
-                            if (progress.lessonPercent >= 100) {
-                                startActivity(
-                                    Intent(this, ModuleDetailActivity::class.java)
-                                        .putExtra(ModuleDetailActivity.EXTRA_MODULE_ID, lesson.moduleId)
-                                )
-                            } else {
-                                finish()
-                            }
+                        .setPositiveButton("Ir a la evaluacion") { _, _ ->
+                            startActivity(
+                                Intent(this, LessonEvaluationActivity::class.java)
+                                    .putExtra(LessonEvaluationActivity.EXTRA_LESSON_ID, lessonId)
+                            )
+                            finish()
                         }
                         .show()
                 }
