@@ -51,6 +51,12 @@
             android:name="com.example.proyecto_final.ModuleQuizActivity"
             android:exported="false" />
         <activity
+            android:name="com.example.proyecto_final.LessonEvaluationActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.proyecto_final.SimulationScenarioActivity"
+            android:exported="false" />
+        <activity
             android:name="com.example.proyecto_final.CertificateActivity"
             android:exported="false" />
 

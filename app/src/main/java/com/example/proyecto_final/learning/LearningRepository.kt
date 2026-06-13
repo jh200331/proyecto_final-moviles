@@ -14,9 +14,12 @@ class LearningRepository(context: Context) {
         val record = db.getProgress().find { it.moduleId == moduleId }
         val quiz = db.getQuizResult(moduleId)
         val unlocked = db.isModuleUnlocked(moduleId)
+        val mastered = percent >= 100 &&
+            db.getModuleEvaluationPercent(moduleId) >= 100 &&
+            db.getModuleSimulationPercent(moduleId) >= 100
         val status = when {
             !unlocked -> ModuleStatus.LOCKED
-            percent >= 100 -> ModuleStatus.COMPLETED
+            mastered -> ModuleStatus.COMPLETED
             completed > 0 -> ModuleStatus.IN_PROGRESS
             else -> if (unlocked) ModuleStatus.IN_PROGRESS else ModuleStatus.LOCKED
         }
@@ -84,5 +87,12 @@ class LearningRepository(context: Context) {
     }
 
     fun getCompletedModulesCount(): Int =
-        getAllModuleProgress().count { it.lessonPercent >= 100 }
+        LearningContent.allModules().count { module ->
+            val record = db.getProgress().find { it.moduleId == module.id }
+            record?.let {
+                it.modulePercent == 100 &&
+                    it.evaluationPercent == 100 &&
+                    it.simulationPercent == 100
+            } == true
+        }
 }
