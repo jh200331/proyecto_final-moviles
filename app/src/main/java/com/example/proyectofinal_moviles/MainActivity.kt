@@ -17,7 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,6 +35,7 @@ import com.example.proyecto_final.LogrosActivity
 import com.example.proyecto_final.MiProgresoActivity
 import com.example.proyecto_final.ModulosActivity
 import com.example.proyecto_final.SimuladorActivity
+import com.example.proyecto_final.learning.LearningRepository
 import com.example.proyectofinal_moviles.ui.theme.ProyectoFinal_movilesTheme
 import kotlin.math.cos
 import kotlin.math.sin
@@ -55,6 +56,17 @@ class MainActivity : ComponentActivity() {
 val EseitNavyColor = Color(0xFF0D1B3E)
 val EseitRedColor = Color(0xFFD32F2F)
 val EseitBackgroundColor = Color(0xFFF5F6F8)
+
+// ─────────────────────────────────────────────────────────────
+// Modelo de datos del perfil para la LevelCard
+// ─────────────────────────────────────────────────────────────
+data class LevelCardData(
+    val level: Int,
+    val levelTitle: String,
+    val totalXp: Int,
+    val xpForNextLevel: Int,
+    val xpProgressPercent: Int   // 0–100
+)
 
 @Composable
 fun DashboardScreen() {
@@ -113,8 +125,39 @@ fun HeaderSection() {
     }
 }
 
+// ─────────────────────────────────────────────────────────────
+// LevelCard — lee datos reales desde la base de datos
+// Se actualiza cada vez que la pantalla se reanuda (onResume)
+// gracias al produceState ligado al ciclo de vida.
+// ─────────────────────────────────────────────────────────────
 @Composable
 fun LevelCard() {
+    val context = LocalContext.current
+
+    // Leemos el perfil en tiempo real; se recalcula cada vez que
+    // el Composable entra en composición (también al volver de Logros).
+    val cardData by produceState(
+        initialValue = LevelCardData(1, "Novato Digital", 0, 500, 0)
+    ) {
+        val repo = LearningRepository(context)
+        val profile = repo.getUserProfile()
+
+        // XP que falta para el siguiente nivel
+        val missing = (profile.xpForNextLevel - profile.totalXp).coerceAtLeast(0)
+
+        value = LevelCardData(
+            level             = profile.level,
+            levelTitle        = profile.levelTitle,
+            totalXp           = profile.totalXp,
+            xpForNextLevel    = profile.xpForNextLevel,
+            xpProgressPercent = profile.xpProgressInLevel
+        )
+    }
+
+    // Formato de miles para el XP
+    val xpFormatted = "%,d".format(cardData.totalXp).replace(',', '.')
+    val missingXp = (cardData.xpForNextLevel - cardData.totalXp).coerceAtLeast(0)
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -129,6 +172,7 @@ fun LevelCard() {
                 .padding(24.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
+            // ── Fila superior: hexágono + nivel/título + XP Total ──
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -143,7 +187,7 @@ fun LevelCard() {
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "4",
+                            text = cardData.level.toString(),
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.Serif,
@@ -160,7 +204,7 @@ fun LevelCard() {
                             fontWeight = FontWeight.Medium
                         )
                         Text(
-                            text = "Defensor Digital",
+                            text = cardData.levelTitle,
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.Serif,
@@ -178,7 +222,7 @@ fun LevelCard() {
                         fontWeight = FontWeight.Medium
                     )
                     Text(
-                        text = "1.250",
+                        text = xpFormatted,
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.Serif,
@@ -187,9 +231,10 @@ fun LevelCard() {
                 }
             }
 
+            // ── Barra de progreso + texto XP faltante ──
             Column {
                 LinearProgressIndicator(
-                    progress = { 0.8f },
+                    progress = { cardData.xpProgressPercent / 100f },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(10.dp)
@@ -199,7 +244,10 @@ fun LevelCard() {
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
-                    text = "XP para el siguiente nivel: 250",
+                    text = if (missingXp == 0)
+                        "¡Nivel máximo alcanzado! 🏆"
+                    else
+                        "XP para el siguiente nivel: $missingXp",
                     color = Color.White.copy(alpha = 0.7f),
                     fontFamily = FontFamily.Serif,
                     fontSize = 13.sp
@@ -289,7 +337,9 @@ fun MenuCardItem(item: MenuDataItem, onClick: () -> Unit) {
                     Image(
                         painter = painterResource(id = item.imageRes),
                         contentDescription = item.title,
-                        modifier = Modifier.size(imageSize).offset(x = (-1).dp)
+                        modifier = Modifier
+                            .size(imageSize)
+                            .offset(x = (-1).dp)
                     )
                 } else if (item.icon != null) {
                     Icon(
