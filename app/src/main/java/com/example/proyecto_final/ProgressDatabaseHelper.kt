@@ -229,7 +229,16 @@ class ProgressDatabaseHelper(context: Context) :
             Triple("first_quiz", "Primer cuestionario", "Aprobaste tu primer cuestionario"),
             Triple("three_modules", "Tres módulos", "Completaste 3 módulos"),
             Triple("all_modules", "Maestro CyberLearn", "Completaste los 6 módulos"),
-            Triple("perfect_quiz", "Perfección", "Obtuviste 10/10 en un cuestionario")
+            Triple("perfect_quiz", "Perfección", "Obtuviste 10/10 en un cuestionario"),
+            Triple("password_guardian", "Guardián de contraseñas", "Completaste el módulo de Contraseñas Seguras"),
+            Triple("phishing_detector", "Detector de phishing", "Completaste el módulo de Phishing"),
+            Triple("safe_browser", "Navegante seguro", "Completaste el módulo de Navegación Segura"),
+            Triple("data_keeper", "Protector de datos", "Completaste el módulo de Protección de Datos"),
+            Triple("wifi_defender", "Defensor Wi-Fi", "Completaste el módulo de Redes Wi-Fi Seguras"),
+            Triple("social_shield", "Escudo social", "Completaste el módulo de Ingeniería Social"),
+            Triple("quiz_streak", "Racha de evaluaciones", "Aprobaste 3 cuestionarios"),
+            Triple("curious_tap", "Curioso de logros", "Presionaste varias insignias para revisar tu progreso"),
+            Triple("three_day_streak", "Racha de 3 días", "Estudia durante 3 días diferentes")
         ).forEach { (id, name, desc) ->
             val values = ContentValues().apply {
                 put("achievement_id", id)
@@ -343,6 +352,7 @@ class ProgressDatabaseHelper(context: Context) :
             addTotalXp(GamificationHelper.XP_PER_QUIZ_PASS)
             checkAchievement("first_quiz") { hasAnyPassedQuiz() }
             checkAchievement("perfect_quiz") { score == total }
+            checkAchievement("quiz_streak") { getPassedQuizCount() >= 3 }
         }
         return passed
     }
@@ -588,6 +598,25 @@ class ProgressDatabaseHelper(context: Context) :
         return result
     }
 
+    fun getBadgeDetails(): List<RewardRecord> {
+        val result = mutableListOf<RewardRecord>()
+        readableDatabase.query("badges", null, null, null, null, null, "module_id ASC").use { cursor ->
+            while (cursor.moveToNext()) {
+                result.add(
+                    RewardRecord(
+                        id = cursor.getString(cursor.getColumnIndexOrThrow("badge_id")),
+                        moduleId = cursor.getIntOrNull("module_id"),
+                        name = cursor.getString(cursor.getColumnIndexOrThrow("name")),
+                        description = cursor.getString(cursor.getColumnIndexOrThrow("description")),
+                        unlocked = cursor.getInt(cursor.getColumnIndexOrThrow("unlocked")) == 1,
+                        unlockedAt = cursor.getStringOrNull("unlocked_at")
+                    )
+                )
+            }
+        }
+        return result
+    }
+
     fun getUnlockedBadgesCount(): Int {
         readableDatabase.rawQuery("SELECT COUNT(*) FROM badges WHERE unlocked = 1", null).use { cursor ->
             if (cursor.moveToFirst()) return cursor.getInt(0)
@@ -604,6 +633,25 @@ class ProgressDatabaseHelper(context: Context) :
                         cursor.getString(cursor.getColumnIndexOrThrow("name")),
                         cursor.getString(cursor.getColumnIndexOrThrow("description")),
                         cursor.getInt(cursor.getColumnIndexOrThrow("unlocked")) == 1
+                    )
+                )
+            }
+        }
+        return result
+    }
+
+    fun getAchievementDetails(): List<RewardRecord> {
+        val result = mutableListOf<RewardRecord>()
+        readableDatabase.query("achievements", null, null, null, null, null, null).use { cursor ->
+            while (cursor.moveToNext()) {
+                result.add(
+                    RewardRecord(
+                        id = cursor.getString(cursor.getColumnIndexOrThrow("achievement_id")),
+                        moduleId = null,
+                        name = cursor.getString(cursor.getColumnIndexOrThrow("name")),
+                        description = cursor.getString(cursor.getColumnIndexOrThrow("description")),
+                        unlocked = cursor.getInt(cursor.getColumnIndexOrThrow("unlocked")) == 1,
+                        unlockedAt = cursor.getStringOrNull("unlocked_at")
                     )
                 )
             }
@@ -632,11 +680,49 @@ class ProgressDatabaseHelper(context: Context) :
 
     private fun checkAchievement(id: String, condition: () -> Boolean) {
         if (!condition()) return
+        if (isAchievementUnlocked(id)) return
         val values = ContentValues().apply {
             put("unlocked", 1)
             put("unlocked_at", dateFormat.format(Date()))
         }
         writableDatabase.update("achievements", values, "achievement_id = ? AND unlocked = 0", arrayOf(id))
+        addTotalXp(150)
+    }
+
+    fun unlockAchievement(id: String) {
+        if (isAchievementUnlocked(id)) return
+        val values = ContentValues().apply {
+            put("unlocked", 1)
+            put("unlocked_at", dateFormat.format(Date()))
+        }
+        writableDatabase.update("achievements", values, "achievement_id = ? AND unlocked = 0", arrayOf(id))
+        addTotalXp(150)
+    }
+
+    private fun isAchievementUnlocked(id: String): Boolean {
+        readableDatabase.query(
+            "achievements", arrayOf("unlocked"),
+            "achievement_id = ?", arrayOf(id),
+            null, null, null
+        ).use { cursor ->
+            if (cursor.moveToFirst()) return cursor.getInt(0) == 1
+        }
+        return false
+    }
+
+    private fun checkModuleAchievement(moduleId: Int) {
+        val achievementId = when (moduleId) {
+            1 -> "password_guardian"
+            2 -> "phishing_detector"
+            3 -> "safe_browser"
+            4 -> "data_keeper"
+            5 -> "wifi_defender"
+            6 -> "social_shield"
+            else -> null
+        }
+        if (achievementId != null) {
+            checkAchievement(achievementId) { true }
+        }
     }
 
     private fun getCompletedModulesCount(): Int =
@@ -691,6 +777,14 @@ class ProgressDatabaseHelper(context: Context) :
         return false
     }
 
+    private fun getPassedQuizCount(): Int {
+        readableDatabase.rawQuery("SELECT COUNT(*) FROM quiz_results WHERE passed = 1", null)
+            .use { cursor ->
+                if (cursor.moveToFirst()) return cursor.getInt(0)
+            }
+        return 0
+    }
+
     private fun checkCertificate() {
         if (getCompletedModulesCount() >= 6) {
             val values = ContentValues().apply { put("certificate_issued", 1) }
@@ -710,4 +804,14 @@ class ProgressDatabaseHelper(context: Context) :
         const val DATABASE_NAME = "cyberedu_progress.db"
         const val DATABASE_VERSION = 3
     }
+}
+
+private fun android.database.Cursor.getStringOrNull(columnName: String): String? {
+    val index = getColumnIndexOrThrow(columnName)
+    return if (isNull(index)) null else getString(index)
+}
+
+private fun android.database.Cursor.getIntOrNull(columnName: String): Int? {
+    val index = getColumnIndexOrThrow(columnName)
+    return if (isNull(index)) null else getInt(index)
 }
