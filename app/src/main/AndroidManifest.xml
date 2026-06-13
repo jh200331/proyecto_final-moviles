@@ -54,5 +54,9 @@
             android:name="com.example.proyecto_final.CertificateActivity"
             android:exported="false" />
 
+        <activity
+            android:name="com.example.proyecto_final.InformacionActivity"
+            android:exported="false" />
+
     </application>
 </manifest>
