@@ -19,6 +19,23 @@ data class ProgressRecord(
     val xp: Int
 )
 
+data class LessonEvaluationResult(
+    val lessonId: Int,
+    val moduleId: Int,
+    val score: Int,
+    val totalQuestions: Int,
+    val passed: Boolean,
+    val attempts: Int
+)
+
+data class SimulationResult(
+    val scenarioId: Int,
+    val moduleId: Int,
+    val score: Int,
+    val passed: Boolean,
+    val attempts: Int
+)
+
 class ProgressDatabaseHelper(context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
@@ -29,6 +46,8 @@ class ProgressDatabaseHelper(context: Context) :
         createUserProfileTable(db)
         createLessonProgressTable(db)
         createQuizResultsTable(db)
+        createLessonEvaluationResultsTable(db)
+        createSimulationResultsTable(db)
         createBadgesTable(db)
         createAchievementsTable(db)
         seedInitialData(db)
@@ -43,6 +62,10 @@ class ProgressDatabaseHelper(context: Context) :
             createAchievementsTable(db)
             seedLessonsAndGamification(db)
             seedUserProfile(db)
+        }
+        if (oldVersion < 3) {
+            createLessonEvaluationResultsTable(db)
+            createSimulationResultsTable(db)
         }
     }
 
@@ -96,6 +119,37 @@ class ProgressDatabaseHelper(context: Context) :
                 score INTEGER NOT NULL DEFAULT 0,
                 total_questions INTEGER NOT NULL DEFAULT 10,
                 passed INTEGER NOT NULL DEFAULT 0,
+                completed_at TEXT
+            )
+            """.trimIndent()
+        )
+    }
+
+    private fun createLessonEvaluationResultsTable(db: SQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS lesson_evaluation_results (
+                lesson_id INTEGER PRIMARY KEY,
+                module_id INTEGER NOT NULL,
+                score INTEGER NOT NULL DEFAULT 0,
+                total_questions INTEGER NOT NULL DEFAULT 5,
+                passed INTEGER NOT NULL DEFAULT 0,
+                attempts INTEGER NOT NULL DEFAULT 0,
+                completed_at TEXT
+            )
+            """.trimIndent()
+        )
+    }
+
+    private fun createSimulationResultsTable(db: SQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS simulation_results (
+                scenario_id INTEGER PRIMARY KEY,
+                module_id INTEGER NOT NULL,
+                score INTEGER NOT NULL DEFAULT 0,
+                passed INTEGER NOT NULL DEFAULT 0,
+                attempts INTEGER NOT NULL DEFAULT 0,
                 completed_at TEXT
             )
             """.trimIndent()
@@ -175,7 +229,16 @@ class ProgressDatabaseHelper(context: Context) :
             Triple("first_quiz", "Primer cuestionario", "Aprobaste tu primer cuestionario"),
             Triple("three_modules", "Tres módulos", "Completaste 3 módulos"),
             Triple("all_modules", "Maestro CyberLearn", "Completaste los 6 módulos"),
-            Triple("perfect_quiz", "Perfección", "Obtuviste 10/10 en un cuestionario")
+            Triple("perfect_quiz", "Perfección", "Obtuviste 10/10 en un cuestionario"),
+            Triple("password_guardian", "Guardián de contraseñas", "Completaste el módulo de Contraseñas Seguras"),
+            Triple("phishing_detector", "Detector de phishing", "Completaste el módulo de Phishing"),
+            Triple("safe_browser", "Navegante seguro", "Completaste el módulo de Navegación Segura"),
+            Triple("data_keeper", "Protector de datos", "Completaste el módulo de Protección de Datos"),
+            Triple("wifi_defender", "Defensor Wi-Fi", "Completaste el módulo de Redes Wi-Fi Seguras"),
+            Triple("social_shield", "Escudo social", "Completaste el módulo de Ingeniería Social"),
+            Triple("quiz_streak", "Racha de evaluaciones", "Aprobaste 3 cuestionarios"),
+            Triple("curious_tap", "Curioso de logros", "Presionaste varias insignias para revisar tu progreso"),
+            Triple("three_day_streak", "Racha de 3 días", "Estudia durante 3 días diferentes")
         ).forEach { (id, name, desc) ->
             val values = ContentValues().apply {
                 put("achievement_id", id)
@@ -256,18 +319,14 @@ class ProgressDatabaseHelper(context: Context) :
         updateProgress(moduleId, percent, current?.evaluationPercent ?: 0, current?.simulationPercent ?: 0, newXp)
         addTotalXp(GamificationHelper.XP_PER_LESSON)
 
-        if (percent >= 100) {
-            unlockBadge("badge_module_$moduleId")
-            addTotalXp(GamificationHelper.XP_PER_MODULE_COMPLETE)
-            checkAchievement("three_modules") { getCompletedModulesCount() >= 3 }
-            checkAchievement("all_modules") { getCompletedModulesCount() >= 6 }
-        }
+        checkModuleMastery(moduleId)
         checkAchievement("first_lesson") { getTotalCompletedLessons() >= 1 }
         checkCertificate()
         return true
     }
 
     fun saveQuizResult(moduleId: Int, score: Int, total: Int): Boolean {
+        val previousResult = getQuizResult(moduleId)
         val passed = score >= GamificationHelper.QUIZ_PASS_THRESHOLD
         val now = dateFormat.format(Date())
         val values = ContentValues().apply {
@@ -279,7 +338,7 @@ class ProgressDatabaseHelper(context: Context) :
         }
         writableDatabase.insertWithOnConflict("quiz_results", null, values, SQLiteDatabase.CONFLICT_REPLACE)
 
-        if (passed) {
+        if (passed && previousResult?.third != true) {
             val current = getProgress().find { it.moduleId == moduleId }
             val evalPercent = (score * 100 / total).coerceIn(0, 100)
             val newXp = (current?.xp ?: 0) + GamificationHelper.XP_PER_QUIZ_PASS
@@ -293,6 +352,7 @@ class ProgressDatabaseHelper(context: Context) :
             addTotalXp(GamificationHelper.XP_PER_QUIZ_PASS)
             checkAchievement("first_quiz") { hasAnyPassedQuiz() }
             checkAchievement("perfect_quiz") { score == total }
+            checkAchievement("quiz_streak") { getPassedQuizCount() >= 3 }
         }
         return passed
     }
@@ -313,6 +373,173 @@ class ProgressDatabaseHelper(context: Context) :
         }
         return null
     }
+
+    fun saveLessonEvaluationResult(
+        lessonId: Int,
+        moduleId: Int,
+        score: Int,
+        totalQuestions: Int
+    ): Boolean {
+        val previous = getLessonEvaluationResult(lessonId)
+        val passed = score >= GamificationHelper.LESSON_EVALUATION_PASS_THRESHOLD
+        val bestScore = maxOf(score, previous?.score ?: 0)
+        val passedBefore = previous?.passed == true
+        val values = ContentValues().apply {
+            put("lesson_id", lessonId)
+            put("module_id", moduleId)
+            put("score", bestScore)
+            put("total_questions", totalQuestions)
+            put("passed", if (passed || passedBefore) 1 else 0)
+            put("attempts", (previous?.attempts ?: 0) + 1)
+            put("completed_at", dateFormat.format(Date()))
+        }
+        writableDatabase.insertWithOnConflict(
+            "lesson_evaluation_results",
+            null,
+            values,
+            SQLiteDatabase.CONFLICT_REPLACE
+        )
+
+        if (passed && !passedBefore) {
+            addModuleXp(moduleId, GamificationHelper.XP_PER_LESSON_EVALUATION)
+            addTotalXp(GamificationHelper.XP_PER_LESSON_EVALUATION)
+            checkAchievement("first_quiz") { getPassedLessonEvaluationsCount() >= 1 }
+            checkAchievement("perfect_quiz") { score == totalQuestions }
+        }
+        refreshEvaluationProgress(moduleId)
+        checkModuleMastery(moduleId)
+        return passed
+    }
+
+    fun getLessonEvaluationResult(lessonId: Int): LessonEvaluationResult? {
+        readableDatabase.query(
+            "lesson_evaluation_results",
+            null,
+            "lesson_id = ?",
+            arrayOf(lessonId.toString()),
+            null,
+            null,
+            null
+        ).use { cursor ->
+            if (cursor.moveToFirst()) {
+                return LessonEvaluationResult(
+                    lessonId = cursor.getInt(cursor.getColumnIndexOrThrow("lesson_id")),
+                    moduleId = cursor.getInt(cursor.getColumnIndexOrThrow("module_id")),
+                    score = cursor.getInt(cursor.getColumnIndexOrThrow("score")),
+                    totalQuestions = cursor.getInt(cursor.getColumnIndexOrThrow("total_questions")),
+                    passed = cursor.getInt(cursor.getColumnIndexOrThrow("passed")) == 1,
+                    attempts = cursor.getInt(cursor.getColumnIndexOrThrow("attempts"))
+                )
+            }
+        }
+        return null
+    }
+
+    fun getModuleEvaluationPercent(moduleId: Int): Int {
+        val passed = readableDatabase.rawQuery(
+            "SELECT COUNT(*) FROM lesson_evaluation_results WHERE module_id = ? AND passed = 1",
+            arrayOf(moduleId.toString())
+        ).use { cursor -> if (cursor.moveToFirst()) cursor.getInt(0) else 0 }
+        return (passed * 100 / GamificationHelper.LESSONS_PER_MODULE).coerceIn(0, 100)
+    }
+
+    fun saveSimulationResult(scenarioId: Int, moduleId: Int, score: Int): Boolean {
+        val previous = getSimulationResult(scenarioId)
+        val passed = score >= 1
+        val passedBefore = previous?.passed == true
+        val values = ContentValues().apply {
+            put("scenario_id", scenarioId)
+            put("module_id", moduleId)
+            put("score", maxOf(score, previous?.score ?: 0))
+            put("passed", if (passed || passedBefore) 1 else 0)
+            put("attempts", (previous?.attempts ?: 0) + 1)
+            put("completed_at", dateFormat.format(Date()))
+        }
+        writableDatabase.insertWithOnConflict(
+            "simulation_results",
+            null,
+            values,
+            SQLiteDatabase.CONFLICT_REPLACE
+        )
+
+        if (passed && !passedBefore) {
+            addModuleXp(moduleId, GamificationHelper.XP_PER_SIMULATION)
+            addTotalXp(GamificationHelper.XP_PER_SIMULATION)
+        }
+        refreshSimulationProgress(moduleId)
+        checkModuleMastery(moduleId)
+        return passed
+    }
+
+    fun getSimulationResult(scenarioId: Int): SimulationResult? {
+        readableDatabase.query(
+            "simulation_results",
+            null,
+            "scenario_id = ?",
+            arrayOf(scenarioId.toString()),
+            null,
+            null,
+            null
+        ).use { cursor ->
+            if (cursor.moveToFirst()) {
+                return SimulationResult(
+                    scenarioId = cursor.getInt(cursor.getColumnIndexOrThrow("scenario_id")),
+                    moduleId = cursor.getInt(cursor.getColumnIndexOrThrow("module_id")),
+                    score = cursor.getInt(cursor.getColumnIndexOrThrow("score")),
+                    passed = cursor.getInt(cursor.getColumnIndexOrThrow("passed")) == 1,
+                    attempts = cursor.getInt(cursor.getColumnIndexOrThrow("attempts"))
+                )
+            }
+        }
+        return null
+    }
+
+    fun getModuleSimulationPercent(moduleId: Int): Int {
+        val passed = readableDatabase.rawQuery(
+            "SELECT COUNT(*) FROM simulation_results WHERE module_id = ? AND passed = 1",
+            arrayOf(moduleId.toString())
+        ).use { cursor -> if (cursor.moveToFirst()) cursor.getInt(0) else 0 }
+        return (passed * 100 / GamificationHelper.LESSONS_PER_MODULE).coerceIn(0, 100)
+    }
+
+    private fun refreshEvaluationProgress(moduleId: Int) {
+        val current = getProgress().find { it.moduleId == moduleId } ?: return
+        updateProgress(
+            moduleId,
+            current.modulePercent,
+            getModuleEvaluationPercent(moduleId),
+            current.simulationPercent,
+            current.xp
+        )
+    }
+
+    private fun refreshSimulationProgress(moduleId: Int) {
+        val current = getProgress().find { it.moduleId == moduleId } ?: return
+        updateProgress(
+            moduleId,
+            current.modulePercent,
+            current.evaluationPercent,
+            getModuleSimulationPercent(moduleId),
+            current.xp
+        )
+    }
+
+    private fun addModuleXp(moduleId: Int, amount: Int) {
+        val current = getProgress().find { it.moduleId == moduleId } ?: return
+        updateProgress(
+            moduleId,
+            current.modulePercent,
+            current.evaluationPercent,
+            current.simulationPercent,
+            current.xp + amount
+        )
+    }
+
+    private fun getPassedLessonEvaluationsCount(): Int =
+        readableDatabase.rawQuery(
+            "SELECT COUNT(*) FROM lesson_evaluation_results WHERE passed = 1",
+            null
+        ).use { cursor -> if (cursor.moveToFirst()) cursor.getInt(0) else 0 }
 
     fun updateProgress(
         moduleId: Int,
@@ -371,6 +598,25 @@ class ProgressDatabaseHelper(context: Context) :
         return result
     }
 
+    fun getBadgeDetails(): List<RewardRecord> {
+        val result = mutableListOf<RewardRecord>()
+        readableDatabase.query("badges", null, null, null, null, null, "module_id ASC").use { cursor ->
+            while (cursor.moveToNext()) {
+                result.add(
+                    RewardRecord(
+                        id = cursor.getString(cursor.getColumnIndexOrThrow("badge_id")),
+                        moduleId = cursor.getIntOrNull("module_id"),
+                        name = cursor.getString(cursor.getColumnIndexOrThrow("name")),
+                        description = cursor.getString(cursor.getColumnIndexOrThrow("description")),
+                        unlocked = cursor.getInt(cursor.getColumnIndexOrThrow("unlocked")) == 1,
+                        unlockedAt = cursor.getStringOrNull("unlocked_at")
+                    )
+                )
+            }
+        }
+        return result
+    }
+
     fun getUnlockedBadgesCount(): Int {
         readableDatabase.rawQuery("SELECT COUNT(*) FROM badges WHERE unlocked = 1", null).use { cursor ->
             if (cursor.moveToFirst()) return cursor.getInt(0)
@@ -387,6 +633,25 @@ class ProgressDatabaseHelper(context: Context) :
                         cursor.getString(cursor.getColumnIndexOrThrow("name")),
                         cursor.getString(cursor.getColumnIndexOrThrow("description")),
                         cursor.getInt(cursor.getColumnIndexOrThrow("unlocked")) == 1
+                    )
+                )
+            }
+        }
+        return result
+    }
+
+    fun getAchievementDetails(): List<RewardRecord> {
+        val result = mutableListOf<RewardRecord>()
+        readableDatabase.query("achievements", null, null, null, null, null, null).use { cursor ->
+            while (cursor.moveToNext()) {
+                result.add(
+                    RewardRecord(
+                        id = cursor.getString(cursor.getColumnIndexOrThrow("achievement_id")),
+                        moduleId = null,
+                        name = cursor.getString(cursor.getColumnIndexOrThrow("name")),
+                        description = cursor.getString(cursor.getColumnIndexOrThrow("description")),
+                        unlocked = cursor.getInt(cursor.getColumnIndexOrThrow("unlocked")) == 1,
+                        unlockedAt = cursor.getStringOrNull("unlocked_at")
                     )
                 )
             }
@@ -415,15 +680,86 @@ class ProgressDatabaseHelper(context: Context) :
 
     private fun checkAchievement(id: String, condition: () -> Boolean) {
         if (!condition()) return
+        if (isAchievementUnlocked(id)) return
         val values = ContentValues().apply {
             put("unlocked", 1)
             put("unlocked_at", dateFormat.format(Date()))
         }
         writableDatabase.update("achievements", values, "achievement_id = ? AND unlocked = 0", arrayOf(id))
+        addTotalXp(150)
+    }
+
+    fun unlockAchievement(id: String) {
+        if (isAchievementUnlocked(id)) return
+        val values = ContentValues().apply {
+            put("unlocked", 1)
+            put("unlocked_at", dateFormat.format(Date()))
+        }
+        writableDatabase.update("achievements", values, "achievement_id = ? AND unlocked = 0", arrayOf(id))
+        addTotalXp(150)
+    }
+
+    private fun isAchievementUnlocked(id: String): Boolean {
+        readableDatabase.query(
+            "achievements", arrayOf("unlocked"),
+            "achievement_id = ?", arrayOf(id),
+            null, null, null
+        ).use { cursor ->
+            if (cursor.moveToFirst()) return cursor.getInt(0) == 1
+        }
+        return false
+    }
+
+    private fun checkModuleAchievement(moduleId: Int) {
+        val achievementId = when (moduleId) {
+            1 -> "password_guardian"
+            2 -> "phishing_detector"
+            3 -> "safe_browser"
+            4 -> "data_keeper"
+            5 -> "wifi_defender"
+            6 -> "social_shield"
+            else -> null
+        }
+        if (achievementId != null) {
+            checkAchievement(achievementId) { true }
+        }
     }
 
     private fun getCompletedModulesCount(): Int =
-        getProgress().count { it.modulePercent >= 100 }
+        getProgress().count {
+            it.modulePercent >= 100 &&
+                it.evaluationPercent >= 100 &&
+                it.simulationPercent >= 100
+        }
+
+    private fun checkModuleMastery(moduleId: Int) {
+        val progress = getProgress().find { it.moduleId == moduleId } ?: return
+        val mastered = progress.modulePercent >= 100 &&
+            progress.evaluationPercent >= 100 &&
+            progress.simulationPercent >= 100
+        if (!mastered || isBadgeUnlocked("badge_module_$moduleId")) return
+
+        unlockBadge("badge_module_$moduleId")
+        addModuleXp(moduleId, GamificationHelper.XP_PER_MODULE_COMPLETE)
+        addTotalXp(GamificationHelper.XP_PER_MODULE_COMPLETE)
+        checkAchievement("three_modules") { getCompletedModulesCount() >= 3 }
+        checkAchievement("all_modules") { getCompletedModulesCount() >= 6 }
+        checkCertificate()
+    }
+
+    private fun isBadgeUnlocked(badgeId: String): Boolean {
+        readableDatabase.query(
+            "badges",
+            arrayOf("unlocked"),
+            "badge_id = ?",
+            arrayOf(badgeId),
+            null,
+            null,
+            null
+        ).use { cursor ->
+            return cursor.moveToFirst() && cursor.getInt(0) == 1
+        }
+    }
 
     private fun getTotalCompletedLessons(): Int {
         readableDatabase.rawQuery("SELECT COUNT(*) FROM lesson_progress WHERE completed = 1", null)
@@ -441,6 +777,14 @@ class ProgressDatabaseHelper(context: Context) :
         return false
     }
 
+    private fun getPassedQuizCount(): Int {
+        readableDatabase.rawQuery("SELECT COUNT(*) FROM quiz_results WHERE passed = 1", null)
+            .use { cursor ->
+                if (cursor.moveToFirst()) return cursor.getInt(0)
+            }
+        return 0
+    }
+
     private fun checkCertificate() {
         if (getCompletedModulesCount() >= 6) {
             val values = ContentValues().apply { put("certificate_issued", 1) }
@@ -451,11 +795,23 @@ class ProgressDatabaseHelper(context: Context) :
     fun isModuleUnlocked(moduleId: Int): Boolean {
         if (moduleId == 1) return true
         val previous = getProgress().find { it.moduleId == moduleId - 1 }
-        return (previous?.modulePercent ?: 0) >= 100
+        return previous?.let {
+            it.modulePercent >= 100 && it.evaluationPercent >= 100 && it.simulationPercent >= 100
+        } ?: false
     }
 
     private companion object {
         const val DATABASE_NAME = "cyberedu_progress.db"
-        const val DATABASE_VERSION = 2
+        const val DATABASE_VERSION = 3
     }
+}
+
+private fun android.database.Cursor.getStringOrNull(columnName: String): String? {
+    val index = getColumnIndexOrThrow(columnName)
+    return if (isNull(index)) null else getString(index)
+}
+
+private fun android.database.Cursor.getIntOrNull(columnName: String): Int? {
+    val index = getColumnIndexOrThrow(columnName)
+    return if (isNull(index)) null else getInt(index)
 }

@@ -3,9 +3,12 @@ package com.example.proyecto_final.learning
 object GamificationHelper {
 
     const val XP_PER_LESSON = 100
+    const val XP_PER_LESSON_EVALUATION = 60
+    const val XP_PER_SIMULATION = 80
     const val XP_PER_QUIZ_PASS = 250
     const val XP_PER_MODULE_COMPLETE = 500
     const val QUIZ_PASS_THRESHOLD = 7
+    const val LESSON_EVALUATION_PASS_THRESHOLD = 4
     const val LESSONS_PER_MODULE = 5
 
     private val levelThresholds = listOf(
