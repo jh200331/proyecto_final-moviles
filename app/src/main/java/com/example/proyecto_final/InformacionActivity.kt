@@ -196,7 +196,9 @@ CyberLearn fue desarrollado como proyecto académico para la asignatura de Segur
 
     Equipo de documentacion
 
-    • Deivy Danilo Prieto Gutierrez
+    • Lauren Juliana Perez Pedraza
+    • Isis Andrea Cohis Perez
+    
     
 
     Funciones:
