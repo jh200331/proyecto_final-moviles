@@ -77,7 +77,7 @@ class LogrosActivity : ComponentActivity() {
         findViewById<TextView>(R.id.txtNivelNumero)?.text = level.toString()
         findViewById<TextView>(R.id.txtRangoActual)?.text = title
         findViewById<TextView>(R.id.txtModulosCompletados)?.text = "$completedModules de 6 modulos dominados"
-        findViewById<ProgressBar>(R.id.progressNivelLogros)?.progress =
+        findViewById<ProgressBar>(R.id.progressNivel)?.progress =
             GamificationHelper.xpProgressInCurrentLevel(totalXp)
     }
 

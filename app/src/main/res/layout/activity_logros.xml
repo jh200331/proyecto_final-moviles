@@ -91,6 +91,14 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/txtModulosCompletados"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 de 6 módulos dominados"
+                        android:textColor="@color/logros_texto_suave"
+                        android:textSize="14sp"/>
+
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Nivel actual"

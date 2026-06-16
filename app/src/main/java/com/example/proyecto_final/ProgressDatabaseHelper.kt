@@ -19,6 +19,15 @@ data class ProgressRecord(
     val xp: Int
 )
 
+data class RewardRecord(
+    val id: String,
+    val moduleId: Int?,
+    val name: String,
+    val description: String,
+    val unlocked: Boolean,
+    val unlockedAt: String?
+)
+
 data class LessonEvaluationResult(
     val lessonId: Int,
     val moduleId: Int,
