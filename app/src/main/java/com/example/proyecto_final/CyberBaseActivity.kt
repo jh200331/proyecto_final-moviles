@@ -246,6 +246,44 @@ abstract class CyberBaseActivity : AppCompatActivity() {
         }
     }
 
+    protected fun sectionTabButton(text: String, selected: Boolean, action: () -> Unit): MaterialButton {
+        return MaterialButton(this).apply {
+            this.text = text
+            isAllCaps = false
+            cornerRadius = dp(20)
+            textSize = 13f
+            typeface = Typeface.create(Typeface.SERIF, if (selected) Typeface.BOLD else Typeface.NORMAL)
+            setTextColor(if (selected) Color.WHITE else blue)
+            setBackgroundColor(if (selected) accent else cardBg)
+            strokeWidth = if (selected) 0 else dp(1)
+            if (!selected) {
+                strokeColor = android.content.res.ColorStateList.valueOf(cardStroke)
+            }
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                marginEnd = dp(8)
+                bottomMargin = dp(4)
+            }
+            setOnClickListener { action() }
+        }
+    }
+
+    protected fun sectionTabBar(block: LinearLayout.() -> Unit): HorizontalScrollView {
+        val scroll = HorizontalScrollView(this).apply {
+            isHorizontalScrollBarEnabled = false
+            layoutParams = blockParams(bottom = 12)
+        }
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            setPadding(0, 0, dp(8), 0)
+        }
+        row.block()
+        scroll.addView(row)
+        return scroll
+    }
+
     protected fun progressLine(label: String, percent: Int, animate: Boolean = false): LinearLayout {
         val container = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
