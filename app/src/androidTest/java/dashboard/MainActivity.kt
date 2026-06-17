@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import com.example.dashboard_ciberseguridad.ui.theme.DashBoard_CiberseguridadTheme
 import kotlin.math.cos
 import kotlin.math.sin
+import com.example.proyectofinal_moviles.R
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
